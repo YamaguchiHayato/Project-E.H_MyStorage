@@ -37,7 +37,7 @@ namespace
 	const auto SHOCKWAVE_SCALE = 2.0f;                     //! 衝撃波のスケール
 	const auto MISSILE_SPAWN_OFFSET_Y = 10.0f;             //! ミサイル生成のY軸オフセット
 
-	const float MISSILE_ANGLE_LIST[] = { -45.0f, -22.5f, 0.0f, 22.5f, 45.0f }; //! ミサイル角度
+	const float MISSILE_ANGLE_LIST[] = {-22.5f, 0.0f, 22.5f}; //! ミサイル角度
 }
 
 #define GET_PLAYER_CHARACON m_player->GetCharacterController()
@@ -104,18 +104,20 @@ namespace nsApp
 
 		void PlayerAirAttackState::OnAttackTick()
 		{
+			/* 銃の場合。*/
 			if (m_player->GetCurrentWeapon() == WeaponType::TwinGun)
 			{
 				if (m_attackTimer == 5 || m_attackTimer == 15)
 					FireAirBullet();
+			}
 
-				else if(m_player->GetCurrentWeapon() == WeaponType::TwinGun)
+			/* 杖の場合。*/
+			else if (m_player->GetCurrentWeapon() == WeaponType::Wand)
+			{
+				if (m_attackTimer == 10 && !m_isSpawningMissile)
 				{
-					if (m_attackTimer == 10 && !m_isSpawningMissile)
-					{
-						SpawnMissile();
-						m_isSpawningMissile = true;
-					}
+					SpawnMissile();
+					m_isSpawningMissile = true;
 				}
 			}
 		}

@@ -15,6 +15,7 @@ namespace nsApp
 {
 	namespace nsActor {
 		class Player;
+		class Boss;
 	}
 
 	class VirtualInputAdapter;
@@ -93,6 +94,7 @@ namespace nsApp
 	private:
 		nsActor::Player* m_outer = nullptr;                           //! ポインタを持つ対象。
 		nsActor::Player* m_helpTarget = nullptr;                      //! 助ける対象。
+		nsActor::Boss* m_bossTarget = nullptr;                        //! 攻撃対象。
 		nsState::StateMachine<NPCBrain>* m_npcStateMachine = nullptr; //! NPCの状態を管理するステートマシン。
 		VirtualInputAdapter* m_virtualInputAdapter = nullptr;         //! VirtualInputAdapterのポインタ。
 

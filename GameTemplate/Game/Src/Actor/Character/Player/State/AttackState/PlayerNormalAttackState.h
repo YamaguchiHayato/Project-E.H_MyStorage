@@ -24,6 +24,7 @@ namespace nsApp
 			/* 親クラスから呼ばれる処理。*/
 			void PlayAttackAnimation() override;
 			void OnAttackTick() override;
+			bool OnUpdateAttack() override;
 			bool OnRequestAttackID(uint8_t& id) override;
 
 
@@ -34,8 +35,8 @@ namespace nsApp
 			void SummonMissile();
 
 			/*
-			* @brief 銃弾を発射させる処理。
-			*/
+			 * @brief 銃弾を発射させる処理。
+			 */
 			void FireGunBullet();
 		};
 	}

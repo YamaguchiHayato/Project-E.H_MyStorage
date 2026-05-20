@@ -1,5 +1,6 @@
 ﻿#include "stdafx.h"
 #include "NPCWandAttackState.h"
+#include "Src/Actor/Character/NPC/State/BasicState/NPCIdleState.h"
 #include "Src/Actor/Character/NPC/State/BasicState/NPCChaseState.h"
 #include "Src/Actor/Character/NPC/State/AttackState/NPCAttackBaseState.h"
 #include "Src/Actor/Character/Player/InputSystem/VirtualInputAdapter.h"
@@ -76,9 +77,12 @@ namespace nsApp
 			PreventClipping(target);
 
 			/* ステートの再抽選。*/
-			if (m_attackTimer > ATTACK_RESET_TIME)
-				Enter();
-		}
+			if (m_attackTimer > ATTACK_RESET_TIME && !m_getBody->IsPlayAnimation())
+			{
+				m_stateMachine->ChangeState(new NPCIdleState());
+				return;
+			}
+	}
 
 
 		void NPCWandAttackState::ExecuteCurrentCombo()
@@ -96,28 +100,30 @@ namespace nsApp
 			(this->*actions[static_cast<int>(m_currentPattern)])();
 		}
 
+
 		void NPCWandAttackState::ExecuteMagicAttack()
 		{
 			if (m_attackTimer == COMBO_FIRST_INPUT)
-				m_virtualInput->SetButton(enButtonRB1,true);
+				m_virtualInput->RequestButton(enButtonRB1,3);
 		}
 
 
 		void NPCWandAttackState::ExecuteMagicHeal()
 		{
 			if (m_attackTimer == COMBO_FIRST_INPUT)
-				m_virtualInput->SetButton(enButtonRB2,true);
+				m_virtualInput->RequestButton(enButtonRB2,3);
 		}
 
 
 		void NPCWandAttackState::ExecuteMeleeAir()
 		{
 			if (m_attackTimer == COMBO_FIRST_INPUT)
-				m_virtualInput->SetButton(enButtonA,true);
+				m_virtualInput->RequestButton(enButtonA,3);
 
 			if (m_attackTimer == COMBO_AIR_INPUT)
-				m_virtualInput->SetButton(enButtonB,true);
+				m_virtualInput->RequestButton(enButtonB,3);
 		}
+
 
 		void NPCWandAttackState::UpdateMovement()
 		{

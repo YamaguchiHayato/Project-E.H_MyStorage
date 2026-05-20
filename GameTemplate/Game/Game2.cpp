@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include <time.h>
 #include "Game2.h"
 #include "Src/Fade/Fade.h"
 
@@ -40,13 +41,13 @@ namespace nsApp
 			DeleteGO(m_soundLister);
 			DeleteGO(m_backGround);
 			DeleteGO(m_camera);
-			DeleteGO(m_player);
 
 			DeleteGO(m_gameClearDirection);
 			DeleteGO(m_gameTimeUpDirection);
 			DeleteGO(m_gameOverDirection);
 			DeleteGO(m_gameEndSelect);
 
+			m_player = nullptr;
 			delete m_generator;
 			delete m_playerHub;
 		}
@@ -54,6 +55,9 @@ namespace nsApp
 
 		bool Game2::Start()
 		{
+			/* 乱数の初期化。*/
+			srand(static_cast<unsigned int>(time(nullptr)));
+
 			/* 音源の生成。*/
 			m_soundLister = NewGO<nsSound::SoundLister>(0, "SoundManager");
 			m_soundLister->GetBGMList().Init();
@@ -67,19 +71,17 @@ namespace nsApp
 			/* カメラを生成。*/
 			m_camera = NewGO<Camera>(0, "camera");
 
-			PhysicsWorld::GetInstance()->EnableDrawDebugWireFrame();
-
-			m_player = NewGO<nsActor::Player>(0, "player");
+			/*ボスを作成。*/
+			m_boss = NewGO<nsActor::Boss>(0, "boss");
+	//		PhysicsWorld::GetInstance()->EnableDrawDebugWireFrame();
 
 			/* プレイアブルキャラを生成する。*/
 			SpawnPlayCharacter();
 
+			if(m_boss != nullptr && m_player != nullptr)
+				/*ボスにプレイヤーをターゲットとして教える。*/
+				m_boss->SetTarget(m_player);
 
-			/*ボスを作成。*/
-			m_boss = NewGO<nsActor::Boss>(0, "boss");
-
-			/*ボスにプレイヤーをターゲットとして教える。*/
-			m_boss->SetTarget(m_player);
 
 			m_characterHP = NewGO<CharacterHP>(0, "characterHP");
 			m_characterHP->Deactivate();
@@ -183,6 +185,8 @@ namespace nsApp
 
 			/* 作成したリストをセットする。*/
 			auto players = m_generator->SpawnPlayers(partyData);
+			if (!players.empty())
+				m_player = players[0];
 
 			/* Hubを生成する。*/
 			m_playerHub = new PlayerControlerHub();

@@ -38,6 +38,16 @@ namespace nsApp
 		}
 
 
+		bool PlayerNormalAttackState::OnUpdateAttack()
+		{
+			/* 48フレーム目に弾丸を生成する前に5フレームウェイトを挟む。*/
+			if ((m_player->GetCurrentWeapon() == WeaponType::Wand || m_player->GetCurrentWeapon() == WeaponType::TwinGun) && m_attackTimer < 50)
+				return true;
+
+			return false;
+		}
+
+
 		bool PlayerNormalAttackState::OnRequestAttackID(uint8_t& id)
 		{
 			return CheckCombo(nsActor::PlayerStateID::enNormalAttack, id);

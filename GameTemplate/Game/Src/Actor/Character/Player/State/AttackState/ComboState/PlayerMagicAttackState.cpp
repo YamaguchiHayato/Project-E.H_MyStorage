@@ -35,14 +35,15 @@ namespace nsApp
 		bool PlayerMagicAttackState::OnUpdateAttack()
 		{
 			/* 長いアニメーションなので、固有の終了条件を定義 */
-			if (m_attackTimer > 400 && !m_player->IsPlayAnimation())
+			if (m_attackTimer > 40 && !m_player->IsPlayAnimation())
 			{
 				m_stateMachine->ChangeState(new PlayerIdleState());
 				return true;
 			}
 
-			return false;
+			return true;
 		}
+
 
 		void PlayerMagicAttackState::OnExitAttack()
 		{

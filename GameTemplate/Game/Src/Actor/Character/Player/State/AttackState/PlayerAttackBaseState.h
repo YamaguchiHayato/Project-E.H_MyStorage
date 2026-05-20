@@ -8,6 +8,8 @@
 
 #include "Src/Actor/Character/Common/IState.h"
 #include "Src/Actor/Character/Player/Player.h"
+#include "DamageRequest.h"
+#include "Boss.h"
 #include "Src/Actor/Magic/MagicProjectotile.h"
 #include "Src/Actor/Magic/Factory/MagicFactory.h"
 #include "Src/Actor/Character/Player/Component/ComboRouteTable.h"
@@ -35,11 +37,11 @@ namespace nsApp
 		public:
 			/* ライフサイクル。*/
 			/* 初期化処理。*/
-			void Enter() override;
+			void Enter() override final;
 			/* 毎フレーム更新する処理。*/
-			void Update() override;
+			void Update() override final ;
 			/* 描画処理。*/
-			void Exit() override;
+			void Exit() override final;
 			/* 遷移要求。*/
 			bool RequestID(uint8_t& id) override
 			{
@@ -184,6 +186,7 @@ namespace nsApp
 
 		protected:
 			nsActor::Player* m_player = nullptr;                      //! プレイヤーのポインタ。
+			nsActor::Boss* m_boss = nullptr;						  //! ボスのポインタ。
 			PresentDamageIndicator* m_damageIndicator = nullptr;      //! ダメージテキスト表示用のインスタンスへのポインタ。
 
 
@@ -201,6 +204,7 @@ namespace nsApp
 			std::unordered_map<ComboInputType, bool> m_inputRequests; //! 入力タイプとフラグを紐づけ。
 
 			AttackType m_currentAttackType = AttackType::None;        //! 現在の攻撃タイプ。
+			DamageRequest m_damageRequest;						      //! ダメージの計算に必要な情報を格納する構造体。	
 
 			Vector3 m_screenPosition = Vector3::Zero;				  //! ダメージテキストの描画位置。
 			Vector3 m_forwardDirection = Vector3::Zero;				  //! プレイヤーの向いている方向を取得するための変数。

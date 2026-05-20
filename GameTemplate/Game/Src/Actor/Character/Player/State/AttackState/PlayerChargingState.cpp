@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "PlayerChargingState.h"
+#include "Src/Actor/Character/Player/Player.h"
 #include "Src/Actor/Character/Player/Component/ComboRouteTable.h"
 #include "Src/Actor/Character/Player/CharacterByWeapon/WandCharacter.h"
 
@@ -97,12 +98,6 @@ namespace nsApp
 
 			if (m_player)
 				m_player->StopWeaponSE();
-		}
-
-
-		bool PlayerChargingState::RequestID(uint8_t& id)
-		{
-			return CheckCombo(PLAYER_STATE_ID::enCharging, id);
 		}
 
 

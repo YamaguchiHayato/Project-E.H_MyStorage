@@ -69,7 +69,7 @@ namespace nsApp
 			{
 				/* 近づくとYボタンで救助。*/
 				m_vInput->SetLStick(0.0f, 0.0f);
-				m_vInput->SetButton(enButtonY,true);
+				m_vInput->RequestButton(enButtonY,3);
 			}
 			return true;
 		}
@@ -89,6 +89,10 @@ namespace nsApp
 			m_attackRange = (m_myWeapon == WeaponType::Wand || m_myWeapon == WeaponType::TwinGun) ? ATTACK_RANGE_MAGIC : ATTACK_RANGE_MELEE;
 
 			ComputeDistance(target);
+
+			char logBuffer[256];
+			sprintf_s(logBuffer, sizeof(logBuffer), "[NPC LOG] Distance: %.2f / AttackRange: %.2f\n", m_distance, m_attackRange);
+			OutputDebugStringA(logBuffer);
 
 			/* 距離を検知。*/
 			if (m_distance > m_attackRange)

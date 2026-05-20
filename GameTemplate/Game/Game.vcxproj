@@ -232,6 +232,8 @@
     <ClCompile Include="BossIdleState.cpp" />
     <ClCompile Include="BossMoveState.cpp" />
     <ClCompile Include="BossRoarState.cpp" />
+    <ClCompile Include="DamageProcessor.cpp" />
+    <ClCompile Include="DamageRequest.cpp" />
     <ClCompile Include="FireAttackStrategy.cpp" />
     <ClCompile Include="Game2.cpp" />
     <ClCompile Include="PlayerControlerHub.cpp" />
@@ -337,6 +339,8 @@
     <ClInclude Include="BossIdleState.h" />
     <ClInclude Include="BossMoveState.h" />
     <ClInclude Include="BossRoarState.h" />
+    <ClInclude Include="DamageProcessor.h" />
+    <ClInclude Include="DamageRequest.h" />
     <ClInclude Include="FireAttackStrategy.h" />
     <ClInclude Include="Game2.h" />
     <ClInclude Include="PlayerControlerHub.h" />

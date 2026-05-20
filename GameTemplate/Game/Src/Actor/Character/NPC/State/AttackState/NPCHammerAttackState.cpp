@@ -103,30 +103,30 @@ namespace nsApp
 		void NPCHammerAttackState::ExecuteMeleeHeavy()
 		{
 			if (m_attackTimer == COMBO_FIRST_INPUT)
-				m_virtualInput->SetButton(enButtonB, true);
+				m_virtualInput->RequestButton(enButtonB, 3);
 
 			if (m_attackTimer == COMBO_HEAVY_INPUT)
-				m_virtualInput->SetButton(enButtonX,true);
+				m_virtualInput->RequestButton(enButtonX,3);
 		}
 
 
 		void NPCHammerAttackState::ExecuteMeleePush()
 		{
 			if (m_attackTimer < PUSH_HOLD_DURATION)
-				m_virtualInput->SetButton(enButtonLB1 ,true);
+				m_virtualInput->RequestButton(enButtonLB1 ,3);
 
 			if (m_attackTimer == PUSH_START_INPUT)
-				m_virtualInput->SetButton(enButtonB ,true);
+				m_virtualInput->RequestButton(enButtonB ,3);
 		}
 
 
 		void NPCHammerAttackState::ExecuteMeleeAir()
 		{
 			if (m_attackTimer == COMBO_FIRST_INPUT)
-				m_virtualInput->SetButton(enButtonA ,true);
+				m_virtualInput->RequestButton(enButtonA ,3);
 
 			if (m_attackTimer == COMBO_AIR_INPUT)
-				m_virtualInput->SetButton(enButtonB ,true);
+				m_virtualInput->RequestButton(enButtonB ,3);
 		}
 
 

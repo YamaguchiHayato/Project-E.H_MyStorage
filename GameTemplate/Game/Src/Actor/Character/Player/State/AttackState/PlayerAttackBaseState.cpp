@@ -3,6 +3,7 @@
 #include "Src/Actor/Character/Player/State/BasicState/PlayerIdleState.h"
 #include "Src/Actor/Character/Player/State/BasicState/PlayerWalkState.h"
 #include "Src/Actor/Character/Player/State/BasicState/PlayerRunState.h"
+#include "DamageProcessor.h"
 
 #include "Src/Actor/Character/Status/AttackParameterTable.h"
 #include "Src/Actor/Magic/Factory/MagicFactory.h"
@@ -25,6 +26,9 @@ namespace nsApp
 		{
 			/* 攻撃の種類ごとにキャストを行う。*/
 			m_player = static_cast<nsActor::Player*>(m_owner);
+
+			/* ボスクラスを探索。*/
+			m_boss = FindGO<nsActor::Boss>("boss");
 
 			/* 共通の初期化。*/
 			OnCommonInitializeToEnter();
@@ -50,12 +54,12 @@ namespace nsApp
 			/* Bボタンアクション。*/
 			if (inputClass.IsAttack())
 			{
-				/* 
-				 *タイマーを加算する。
+				/*
+				 * タイマーを加算する。
 				 * Bボタンを押すごとにタイマーを加算し、当てはまるなら連続攻撃に繋げる。
 				 */
 				m_rushCount++;
-				
+
 				/* Bボタンが押されていたら予約を入れる。*/
 				m_inputRequests[ComboInputType::PressB] = true;
 			}
@@ -66,7 +70,7 @@ namespace nsApp
 			/* Aボタンアクション。*/
 			if (inputClass.IsSlashUp())
 				m_inputRequests[ComboInputType::PressLB2] = true;
-			else if(inputClass.IsJump())
+			else if (inputClass.IsJump())
 				m_inputRequests[ComboInputType::PressA] = true;
 
 
@@ -88,17 +92,20 @@ namespace nsApp
 			}
 
 			/* 衝突判定。*/
-			if (!m_isHit)
+			if (m_boss != nullptr)
 			{
 				auto& hitDetection = m_player->GetWeaponHitDetection();
-				auto boss = FindGO<nsActor::Boss>("boss");
 
-				if (boss != nullptr && hitDetection.IsHit(boss)) // ★本当に当たった時だけ！
+				if (hitDetection.IsHit(m_boss))
 				{
-					OnHitDamageText(boss);
-					boss->ApplyDamage(m_finalDamage);
+					m_damageRequest.target = m_boss;
+					m_damageRequest.damageAmount = m_finalDamage;
+					m_damageRequest.hitPosition = m_boss->GetPosition();
+					m_damageRequest.hitPosition.y += DAMAGE_TEXT_OFFSET_Y;
+
+					DamageProcessor::ApplyDamage(m_damageRequest);
 					m_player->SetHitStop(HIT_STOP_FRAME);
-					boss->SetHitStop(HIT_STOP_FRAME);
+					m_boss->SetHitStop(HIT_STOP_FRAME);
 				}
 
 				/* 終了判定。*/
@@ -108,7 +115,7 @@ namespace nsApp
 					return;
 				}
 			}
-///////////////////////////////////////////////////////////////////////////////////////////////////
+			///////////////////////////////////////////////////////////////////////////////////////////////////
 		}
 
 

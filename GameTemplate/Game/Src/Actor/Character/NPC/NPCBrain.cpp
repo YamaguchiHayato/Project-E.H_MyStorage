@@ -27,9 +27,6 @@ namespace nsApp
 		if (m_outer == nullptr || m_virtualInputAdapter == nullptr)
 			return;
 
-		/* フレーム開始の処理。*/
-		m_virtualInputAdapter->BeginFlame();
-
 		/* ターゲットを探す。*/
 		m_helpTarget = m_outer->SearchCharacter();
 
@@ -41,13 +38,18 @@ namespace nsApp
 
 	nsActor::ICharacter* NPCBrain::SearchTarget()
 	{
-		/* 目標を探索する。*/
-		auto target  = FindGO<nsActor::Boss>("boss");
+		if(m_bossTarget == nullptr)
+		  /* 目標を探索する。*/
+		  m_bossTarget = FindGO<nsActor::Boss>("boss");
 
 		/* 見つからなかった場合。*/
-		if (target == nullptr || reinterpret_cast<uintptr_t>(target) == 0xFFFFFFFFFFFFFFFF)
+		if (m_bossTarget == nullptr || reinterpret_cast<uintptr_t>(m_bossTarget) == 0xFFFFFFFFFFFFFFFF)
 			return nullptr;
 
-		return target;
+		/* BossのHPが0になった場合。*/
+		if(m_bossTarget->GetCharacterStatus().hp.currentHP <= 0)
+			return nullptr;
+
+		return m_bossTarget;
 	}
 }

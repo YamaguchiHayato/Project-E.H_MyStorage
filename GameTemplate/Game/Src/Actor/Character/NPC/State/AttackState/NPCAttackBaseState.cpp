@@ -65,9 +65,6 @@ namespace nsApp
 		{
 			if (!m_virtualInput)
 				return;
-
-			/* 入力情報のリセット。*/
-			m_virtualInput->Reset();
 		}
 	}
 }

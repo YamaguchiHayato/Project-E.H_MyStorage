@@ -230,6 +230,8 @@
     <ClCompile Include="PlayerControlerHub.cpp" />
     <ClCompile Include="Src\Debug\Sandbag.cpp" />
     <ClCompile Include="BossRoarState.cpp" />
+    <ClCompile Include="DamageRequest.cpp" />
+    <ClCompile Include="DamageProcessor.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
@@ -423,5 +425,7 @@
     <ClInclude Include="PlayerControlerHub.h" />
     <ClInclude Include="Src\Debug\Sandbag.h" />
     <ClInclude Include="BossRoarState.h" />
+    <ClInclude Include="DamageRequest.h" />
+    <ClInclude Include="DamageProcessor.h" />
   </ItemGroup>
 </Project>

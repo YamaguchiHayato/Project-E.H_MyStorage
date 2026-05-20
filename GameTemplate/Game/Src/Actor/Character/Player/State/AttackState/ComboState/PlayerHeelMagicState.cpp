@@ -49,13 +49,13 @@ namespace nsApp
 			ComputeHeelEffectScale();
 
 			/* 攻撃終了の判定。*/ 
-			if (m_attackTimer > 25 && !m_player->IsPlayAnimation())
+			if (m_attackTimer > 35 && !m_player->IsPlayAnimation())
 			{
 				m_stateMachine->ChangeState(new PlayerIdleState());
 				return true;
 			}
 
-			return false;
+			return true;
 		}
 
 
