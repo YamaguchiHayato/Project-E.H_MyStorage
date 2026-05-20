@@ -8,7 +8,7 @@
 
 #include "Src/Actor/Character/Common/IState.h"
 #include "Src/Actor/Character/Player/Player.h"
-#include "DamageRequest.h"
+#include "Src/Actor/Character/Common/Damage/DamageProcessor.h"
 #include "Boss.h"
 #include "Src/Actor/Magic/MagicProjectotile.h"
 #include "Src/Actor/Magic/Factory/MagicFactory.h"
@@ -22,8 +22,6 @@
 
 namespace nsApp
 {
-	class PresentDamageIndicator;
-
 	namespace nsState
 	{
 		class PlayerAttackBaseState : public IState<nsActor::Actor>
@@ -39,7 +37,7 @@ namespace nsApp
 			/* 初期化処理。*/
 			void Enter() override final;
 			/* 毎フレーム更新する処理。*/
-			void Update() override final ;
+			void Update() override final;
 			/* 描画処理。*/
 			void Exit() override final;
 			/* 遷移要求。*/
@@ -48,15 +46,15 @@ namespace nsApp
 				return OnRequestAttackID(id);
 			}
 
-		
+
 		/* TemplateMethod。*/
 		protected:
-			/* 
+			/*
 			 * @brief 攻撃アニメーションの再生や攻撃タイプの設定。
 			 */
 			virtual void PlayAttackAnimation() {};
 
-			/* 
+			/*
 			 * @brief ステート開始時に行う固有の処理。
 			 */
 			virtual void OnEnterAttack() {};
@@ -74,7 +72,7 @@ namespace nsApp
 				SetAttackTimer(0);
 				/* 連打カウント。*/
 				m_rushCount = 0;
-			    /* ダメージ数。*/
+				/* ダメージ数。*/
 				m_finalDamage = 0;
 			}
 
@@ -88,10 +86,10 @@ namespace nsApp
 			 */
 			virtual void OnExitAttack() {};
 
-			/** 
+			/**
 			 * @brief その他の処理を行うための関数。
 			 * @detail 当たり判定の有無/弾丸/魔法の生成タイミングを制御。
-			 */ 
+			 */
 			virtual void OnAttackTick() {};
 
 			/**
@@ -105,7 +103,7 @@ namespace nsApp
 
 		/* セッター。*/
 		public:
-			/** 
+			/**
 			 * @brief 攻撃の時間をセット。
 			 * @param timer 攻撃の時間を管理するタイマーの値。
 			 */
@@ -132,7 +130,7 @@ namespace nsApp
 				/* 弾丸を生成する座標。*/
 				request.basePosition = m_spawnPosition;
 
-				/* 弾丸の発射方向。*/ 
+				/* 弾丸の発射方向。*/
 				request.direction = m_forwardDirection;
 
 				/* GunShooterクラスに発射処理を依頼。*/
@@ -175,19 +173,29 @@ namespace nsApp
 			 */
 			bool CheckCombo(PLAYER_STATE_ID currentStateID, uint8_t& id);
 
+			/**
+			 * @brief ダメージテキストの表示とダメージの計算を行う処理。
+			 * @param target ダメージを与える対象のキャラクター。
+			 */
+			void ApplyDamageToText(nsActor::ICharacter* target);
 
 			/**
-             * ダメージテキストを表示する処理。
-             * @param hitPosition ダメージテキストを表示する位置。
-             * @param currentAttackType 現在の攻撃タイプ。
-             */
-			void OnHitDamageText(nsActor::ICharacter* target);
+			 * @brief ダメージの計算を行う処理。
+			 */
+			int CalculateFinalDamage() const;
+
+			/**
+			 * @brief ダメージリクエストの構築を行う処理。
+			 * @param target ダメージを与える対象のキャラクター。
+			 * @param damageAmount ダメージの量。
+			 * @return ダメージリクエスト構造体。
+			 */
+			DamageRequest BuildDamageRequest(nsActor::ICharacter* target, int damageAmount) const;
 
 
 		protected:
 			nsActor::Player* m_player = nullptr;                      //! プレイヤーのポインタ。
 			nsActor::Boss* m_boss = nullptr;						  //! ボスのポインタ。
-			PresentDamageIndicator* m_damageIndicator = nullptr;      //! ダメージテキスト表示用のインスタンスへのポインタ。
 
 
 		protected:
@@ -199,16 +207,12 @@ namespace nsApp
 			bool m_isGrounded;										  //! 地上にいるかどうか。
 			bool m_isHit;											  //! 攻撃がヒットしたかどうか。
 
-			float m_criticalRate = 0.0f;							  //! クリティカル補正の確率。
-
 			std::unordered_map<ComboInputType, bool> m_inputRequests; //! 入力タイプとフラグを紐づけ。
 
 			AttackType m_currentAttackType = AttackType::None;        //! 現在の攻撃タイプ。
 			DamageRequest m_damageRequest;						      //! ダメージの計算に必要な情報を格納する構造体。	
 
-			Vector3 m_screenPosition = Vector3::Zero;				  //! ダメージテキストの描画位置。
 			Vector3 m_forwardDirection = Vector3::Zero;				  //! プレイヤーの向いている方向を取得するための変数。
-			Vector3 m_getPlayerPosition = Vector3::Zero;			  //! プレイヤーの座標を取得するための変数。
 			Vector3 m_spawnPosition = Vector3::Zero;				  //! 弾丸の発射位置を管理する変数。
 		};
 	}

@@ -18,7 +18,7 @@
 #include "Boss.h"
 #include "Src/Actor/Stage/BackGround.h"
 #include "Src/Actor/Character/Player/Component/PlayerGenerator.h"
-#include "PlayerControlerHub.h"
+#include "Src/Actor/Character/Player/InputSystem/PlayerControlerHub.h"
 
 namespace
 {

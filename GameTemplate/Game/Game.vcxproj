@@ -232,11 +232,11 @@
     <ClCompile Include="BossIdleState.cpp" />
     <ClCompile Include="BossMoveState.cpp" />
     <ClCompile Include="BossRoarState.cpp" />
-    <ClCompile Include="DamageProcessor.cpp" />
-    <ClCompile Include="DamageRequest.cpp" />
+    <ClCompile Include="Src\Actor\Character\Common\Damage\DamageProcessor.cpp" />
+    <ClCompile Include="Src\Actor\Character\Common\Damage\DamageRequest.cpp" />
     <ClCompile Include="FireAttackStrategy.cpp" />
     <ClCompile Include="Game2.cpp" />
-    <ClCompile Include="PlayerControlerHub.cpp" />
+    <ClCompile Include="Src\Actor\Character\Player\InputSystem\PlayerControlerHub.cpp" />
     <ClCompile Include="Src\Actor\Character\NPC\State\AttackState\NPCTwinGunAttackState.cpp" />
     <ClCompile Include="Src\Actor\Character\Player\InputSystem\VirtualInputAdapter.cpp" />
     <ClCompile Include="Src\Actor\Magic\Factory\MagicFactory.cpp" />
@@ -278,7 +278,7 @@
     <ClCompile Include="MemberSelect.cpp" />
     <ClCompile Include="QuestSelect.cpp" />
     <ClCompile Include="Select.cpp" />
-    <ClCompile Include="PresentDamageIndicator.cpp" />
+    <ClCompile Include="Src\Actor\Character\Common\Damage\PresentDamageIndicator.cpp" />
     <ClCompile Include="Src\Actor\Actor.cpp" />
     <ClCompile Include="Src\Actor\Character\Player\State\AttackState\PlayerChargingState.cpp" />
     <ClCompile Include="Src\Actor\Character\Player\State\BasicState\PlayerGetUpState.cpp" />
@@ -339,11 +339,11 @@
     <ClInclude Include="BossIdleState.h" />
     <ClInclude Include="BossMoveState.h" />
     <ClInclude Include="BossRoarState.h" />
-    <ClInclude Include="DamageProcessor.h" />
-    <ClInclude Include="DamageRequest.h" />
+    <ClInclude Include="Src\Actor\Character\Common\Damage\DamageProcessor.h" />
+    <ClInclude Include="Src\Actor\Character\Common\Damage\DamageRequest.h" />
     <ClInclude Include="FireAttackStrategy.h" />
     <ClInclude Include="Game2.h" />
-    <ClInclude Include="PlayerControlerHub.h" />
+    <ClInclude Include="Src\Actor\Character\Player\InputSystem\PlayerControlerHub.h" />
     <ClInclude Include="Src\Actor\Character\Player\InputSystem\GamePadInputAdapter.h" />
     <ClInclude Include="IBossAttackStrategy.h" />
     <ClInclude Include="Src\Actor\Character\NPC\State\AttackState\NPCTwinGunAttackState.h" />
@@ -389,7 +389,7 @@
     <ClInclude Include="MemberSelect.h" />
     <ClInclude Include="QuestSelect.h" />
     <ClInclude Include="Select.h" />
-    <ClInclude Include="PresentDamageIndicator.h" />
+    <ClInclude Include="Src\Actor\Character\Common\Damage\PresentDamageIndicator.h" />
     <ClInclude Include="Src\Actor\Actor.h" />
     <ClInclude Include="Src\Actor\Character\Player\State\AttackState\PlayerChargingState.h" />
     <ClInclude Include="Src\Actor\Character\Player\State\BasicState\PlayerGetUpState.h" />
