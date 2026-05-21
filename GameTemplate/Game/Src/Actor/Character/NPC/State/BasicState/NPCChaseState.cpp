@@ -90,10 +90,6 @@ namespace nsApp
 
 			ComputeDistance(target);
 
-			char logBuffer[256];
-			sprintf_s(logBuffer, sizeof(logBuffer), "[NPC LOG] Distance: %.2f / AttackRange: %.2f\n", m_distance, m_attackRange);
-			OutputDebugStringA(logBuffer);
-
 			/* ‹——£‚ğŒŸ’mB*/
 			if (m_distance > m_attackRange)
 			{

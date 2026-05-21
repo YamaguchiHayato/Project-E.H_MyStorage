@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "MagicProjectotile.h"
+#include "Src/Actor/Character/Common/Damage/DamageProcessor.h"
 #include "Boss.h"
 
 namespace nsApp
@@ -80,10 +81,12 @@ namespace nsApp
 			}
 		}
 
+
 		void MagicProjectotile::Render(RenderContext& rc)
 		{
 			m_missileMddel.Draw(rc);
 		}
+
 
 		void MagicProjectotile::TargetMoving()
 		{
@@ -115,6 +118,7 @@ namespace nsApp
 			}
 		}
 
+
 		bool MagicProjectotile::CheckHitBoss()
 		{
 			if (m_magicCollider == nullptr) return false;
@@ -144,7 +148,10 @@ namespace nsApp
 						m_distanceToBoss = (m_bossPosition - m_closestPointOnTrajectory).Length();
 
 						if (m_distanceToBoss < 150.0f) {
-							boss->ApplyDamage(static_cast<int>(m_damage));
+							m_request.target = boss;
+							m_request.damageAmount = static_cast<int>(m_param.damage);
+							m_request.hitPosition = m_position;
+							DamageProcessor::ApplyDamage(m_request);
 							return true;
 						}
 					}

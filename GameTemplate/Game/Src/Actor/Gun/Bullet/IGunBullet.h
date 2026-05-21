@@ -7,11 +7,14 @@
 
 #include "Src/Actor/Actor.h"
 #include "Src/Actor/Gun/Parameter/BulletParameter.h"
+#include "Src/Actor/Character/Common/Damage/DamageRequest.h"
 
 namespace nsApp
 {
 	namespace nsActor
 	{
+		class Boss;
+
 		class IGunBullet : public Actor
 		{
 		public:
@@ -51,6 +54,7 @@ namespace nsApp
 			BulletParameter m_param;									//! 弾丸のパラメータ。 
 			nsK2Engine::CollisionObject* m_bulletCollider = nullptr;    //! 弾丸の当たり判定オブジェクト。
 			std::unique_ptr<ModelRender> m_modelRender;					//! 弾丸のモデルレンダラー。
+			Boss* m_boss = nullptr;										//! ボスのポインタ。ヒット判定や軌道計算に使用。
 
 
 		private:
@@ -64,6 +68,8 @@ namespace nsApp
 
 			Quaternion m_angle = Quaternion::Identity;					//! 弾丸の回転角。モデルの向きに合わせて設定。
 			Quaternion m_direction = Quaternion::Identity;				//! 弾丸の向き。前方向ベクトルから計算される。
+
+			DamageRequest m_request;
 
 			float m_currentLifeTime = 0.0f;								//! 弾丸の現在の寿命。初期化時にパラメータから設定され、時間経過で減少する。
 			float m_speedPerSecond = 0.0f;								//! 弾丸の速度。初期化時にパラメータから設定され、前方向ベクトルに乗算される。

@@ -8,6 +8,8 @@
 
 #include "Src/Actor/Character/Common/WeaponHitDetection.h"
 #include "Src/Actor/Magic/Parameter/MagicParameter.h"
+#include "Src/Actor/Character/Common/Damage/DamageRequest.h"
+#include "Src/Actor/Gun/Parameter/BulletParameter.h"
 
 namespace nsApp
 {
@@ -145,7 +147,8 @@ namespace nsApp
 			Quaternion m_angleY = Quaternion::Identity;          //! Y軸の回転角。
 			Quaternion m_angleZ = Quaternion::Identity;          //! Z軸の回転角。
 
-
+			BulletParameter m_param;									//! 弾丸のパラメータ。 
+			DamageRequest m_request;
 			ModelRender m_missileMddel;							 //! ミサイルを描画するレンダー。
 
 			float m_currentLifeTime = 0.0f;                      //! 秒数管理用の寿命			

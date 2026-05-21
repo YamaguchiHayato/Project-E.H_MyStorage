@@ -17,6 +17,7 @@ namespace
 	const auto DAMAGE_TEXT_OFFSET_Y = 120.0f;   //! ダメージテキストのY軸オフセット。
 	const auto CRITICAL_PERCENTAGE = 100.0f;    //! クリティカル発生確立。
 }
+
 namespace nsApp
 {
 	namespace nsState
@@ -94,7 +95,7 @@ namespace nsApp
 			{
 				auto& hitDetection = m_player->GetWeaponHitDetection();
 
-				if (hitDetection.IsHit(m_boss))
+				if (!m_isHit && hitDetection.IsHit(m_boss))
 				{
 					m_isHit = true;
 					ApplyDamageToText(m_boss);

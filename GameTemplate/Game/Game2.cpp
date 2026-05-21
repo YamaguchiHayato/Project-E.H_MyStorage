@@ -73,7 +73,6 @@ namespace nsApp
 
 			/*ボスを作成。*/
 			m_boss = NewGO<nsActor::Boss>(0, "boss");
-	//		PhysicsWorld::GetInstance()->EnableDrawDebugWireFrame();
 
 			/* プレイアブルキャラを生成する。*/
 			SpawnPlayCharacter();

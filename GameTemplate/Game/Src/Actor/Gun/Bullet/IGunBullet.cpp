@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "IGunBullet.h"
 #include "Boss.h"
+#include "Src/Actor/Character/Common/Damage/DamageProcessor.h"
 
 namespace
 {
@@ -14,8 +15,10 @@ namespace nsApp
 	{
 		IGunBullet::~IGunBullet()
 		{
-			if (m_bulletCollider != nullptr) DeleteGO(m_bulletCollider);
+			if (m_bulletCollider != nullptr)
+				DeleteGO(m_bulletCollider);
 		}
+
 
 		void IGunBullet::Initialize(const BulletParameter& param, const Vector3& spawnPosition, const Vector3& forwardDirection)
 		{
@@ -38,7 +41,10 @@ namespace nsApp
 			m_bulletCollider->SetIsEnableAutoDelete(false);
 
 			m_previousPosition = m_position;
+
+			m_boss = FindGO<Boss>("boss");
 		}
+
 
 		void IGunBullet::Update()
 		{
@@ -75,6 +81,7 @@ namespace nsApp
 			}
 		}
 
+
 		void IGunBullet::Render(RenderContext& rc)
 		{
 			if (m_modelRender) 
@@ -87,16 +94,16 @@ namespace nsApp
 			if (m_bulletCollider == nullptr)
 				return false;
 
-			auto boss = FindGO<nsActor::Boss>("boss"); 
-			if (boss != nullptr && reinterpret_cast<uintptr_t>(boss) != 0xFFFFFFFFFFFFFFFF)
+			auto boss = m_boss;
+			if (m_boss != nullptr && reinterpret_cast<uintptr_t>(m_boss) != 0xFFFFFFFFFFFFFFFF)
 			{
-				if (m_bulletCollider->IsHit(boss->GetController()))
+				if (m_bulletCollider->IsHit(m_boss->GetController()))
 				{
-					boss->ApplyDamage(static_cast<int>(m_param.damage));
+					m_boss->ApplyDamage(static_cast<int>(m_param.damage));
 					return true;
 				}
 
-				m_bossPosition = boss->GetPosition();
+				m_bossPosition = m_boss->GetPosition();
 				m_bossPosition.y += BOSS_CENTER_OFFSET_Y;
 
 				m_bulletTrajectory = m_position - m_previousPosition;
@@ -114,7 +121,10 @@ namespace nsApp
 
 						if (m_distanceToBoss < BOSS_HIT_DISTANCE_THRESHOLD)
 						{
-							boss->ApplyDamage(static_cast<int>(m_param.damage));
+							m_request.target = m_boss;
+							m_request.damageAmount = static_cast<int>(m_param.damage);
+							m_request.hitPosition = m_position;
+							DamageProcessor::ApplyDamage(m_request);
 							return true;
 						}
 					}

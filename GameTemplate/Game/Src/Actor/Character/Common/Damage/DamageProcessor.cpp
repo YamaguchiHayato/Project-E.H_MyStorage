@@ -6,6 +6,20 @@ namespace nsApp
 {
 	bool DamageProcessor::ApplyDamage(const DamageRequest& request)
 	{
+#ifdef _DEBUG
+		char log[256];
+		sprintf_s(
+			log,
+			"[DamageProcessor] target=%p damage=%d pos=(%.1f, %.1f, %.1f)\n",
+			request.target,
+			request.damageAmount,
+			request.hitPosition.x,
+			request.hitPosition.y,
+			request.hitPosition.z
+		);
+		OutputDebugStringA(log);
+#endif
+
 		if (!IsValidRequest(request))
 			return false;
 
