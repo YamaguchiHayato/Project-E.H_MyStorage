@@ -3,6 +3,32 @@
 #include "Src/Actor/Magic/Parameter/MagicParameterTable.h"
 #include "Src/Actor/Magic/MagicProjectotile.h"
 
+namespace
+{
+	const char* GetMagicObjectName(nsApp::nsActor::MagicType type)
+	{
+		using nsApp::nsActor::MagicType;
+
+		switch (type)
+		{
+		case MagicType::enNormalMagic:
+			return "MagicObject_Normal";
+
+		case MagicType::enRushMagic:
+			return "MagicObject_Rush";
+
+		case MagicType::enAirMagic:
+			return "MagicObject_Air";
+
+		case MagicType::enChargeMagic:
+			return "MagicObject_Charge";
+
+		default:
+			return "MagicObject_Normal";
+		}
+	}
+}
+
 namespace nsApp
 {
 	void MagicFactory::CreateMagicObject(nsActor::MagicType type, const Vector3& basePosition, const Vector3& forward, nsActor::ICharacter* target)
@@ -19,14 +45,28 @@ namespace nsApp
 		localSpawnPosition.y += magicParameter.spawnOffsetY;
 		localSpawnPosition += localForwardPosition * magicParameter.forwardOffset;
 
-		/* 魔法オブジェクトクラスを生成し、初期化する。*/
-		auto* createMagic = NewGO<nsActor::MagicProjectotile>(0, "MagicObject");
+		/* 未使用の魔法弾を探す。*/
+		const char* objectName = GetMagicObjectName(type);
+
+		nsActor::MagicProjectotile* createMagic = nullptr;
+
+		const auto& magics = FindGOs<nsActor::MagicProjectotile>(objectName);
+		for (auto* pooledMagic : magics)
+		{
+			if (pooledMagic != nullptr && !pooledMagic->IsInUse())
+			{
+				createMagic = pooledMagic;
+				break;
+			}
+		}
+
+		if (createMagic == nullptr)
+			createMagic = NewGO<nsActor::MagicProjectotile>(0, objectName);
+
 		if (createMagic)
 		{
-			/* 初期化。*/
 			createMagic->Initialize(type, localSpawnPosition, localForwardPosition, magicParameter);
 
-			/* 追従目標が設定されているならば、設定する。*/
 			if (target)
 				createMagic->SetTarget(target);
 		}

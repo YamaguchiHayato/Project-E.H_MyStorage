@@ -20,9 +20,19 @@ namespace nsApp
 
 		void PlayerNormalAttackState::OnAttackTick()
 		{
-			/* 1フレーム目で近接武器の当たり判定をオンにする。*/
 			if (m_attackTimer == 1)
 				m_player->GetWeaponHitDetection().Enable();
+		}
+
+
+		bool PlayerNormalAttackState::OnUpdateAttack()
+		{
+			const bool isRangeWeapon =
+				m_player->GetCurrentWeapon() == WeaponType::Wand ||
+				m_player->GetCurrentWeapon() == WeaponType::TwinGun;
+
+			if (!isRangeWeapon)
+				return false;
 
 			/* 48フレーム目で遠距離武器の弾丸を発射。*/
 			if (m_attackTimer == 48)
@@ -35,13 +45,9 @@ namespace nsApp
 				else if (m_player->GetCurrentWeapon() == WeaponType::TwinGun)
 					FireGunBullet();
 			}
-		}
 
-
-		bool PlayerNormalAttackState::OnUpdateAttack()
-		{
-			/* 48フレーム目に弾丸を生成する前に5フレームウェイトを挟む。*/
-			if ((m_player->GetCurrentWeapon() == WeaponType::Wand || m_player->GetCurrentWeapon() == WeaponType::TwinGun) && m_attackTimer < 50)
+			/* 遠距離武器は50Fまでは攻撃状態を維持する。*/
+			if (m_attackTimer < 50)
 				return true;
 
 			return false;

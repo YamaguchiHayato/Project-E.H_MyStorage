@@ -29,6 +29,5 @@ namespace nsApp
 	private:
 		Vector3 m_forwardDirection = Vector3::Zero; //! 魔法の前方向ベクトル。
 
-
 	};
 }

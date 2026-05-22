@@ -67,6 +67,11 @@ namespace nsApp
 			 */
 			bool CheckHitBoss();
 
+			/**
+			 * @brief 魔法弾を非アクティブ化する。
+			 */
+			void Deactivate();
+
 
 		/* セッター。*/
 		public:
@@ -123,10 +128,18 @@ namespace nsApp
 				return m_angleZ * m_angleY * m_angleZ;
 			}
 
+			/**
+			 * @brief プール内で使用中かを取得する。
+			 * @return 使用中ならtrue。
+			 */
+			inline bool IsInUse() const
+			{
+				return m_isInUse;
+			}
 
 		private:
-			nsActor::ICharacter* m_target = nullptr;			 //! 目標。
-			nsK2Engine::CollisionObject* m_magicCollider;        //! 魔法の当たり判定を管理するクラス。
+			nsActor::ICharacter* m_target = nullptr;					   //! 目標。
+			nsK2Engine::CollisionObject* m_magicCollider = nullptr;        //! 魔法の当たり判定を管理するクラス。
 			
 
 		private:
@@ -161,6 +174,10 @@ namespace nsApp
 			float m_trajectoryLengthSquared = 0.0f;              //! 軌道の長さの二乗。
 			float m_closestPointRatio = 0.0f;                    //! 最も近い点の比率。
 			float m_distanceToBoss = 0.0f;						 //! ボスまでの距離。
+
+			bool m_isInUse = false;								 //! 魔法弾が現在使用中か。
+			bool m_isModelInitialized = false;
+
 		};
 	}
 }

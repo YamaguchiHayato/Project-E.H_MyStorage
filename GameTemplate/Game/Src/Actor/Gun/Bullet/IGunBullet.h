@@ -21,6 +21,8 @@ namespace nsApp
 			IGunBullet() = default;
 			virtual ~IGunBullet();
 
+
+		public:
 			/**
 			 * @brief 弾丸の初期化。パラメータを丸ごと受け取る。
 			 * @param param 弾丸のパラメータ。BulletParameter構造体でまとめて管理。
@@ -39,6 +41,17 @@ namespace nsApp
 			void Render(RenderContext& rc) override;
 
 
+		public:
+			/**
+			 * @brief プール内で使用中かを取得する。
+			 * @return 使用中ならtrue。
+			 */
+			inline bool IsInUse() const
+			{
+				return m_isInUse;
+			}
+
+
 		private:
 			/**
 			 * @brief　弾丸がボスにヒットしたかを判定する関数。直接の球体判定と、すり抜け防止の線分判定の両方を行う。
@@ -46,8 +59,10 @@ namespace nsApp
 			 */
 			bool CheckHitBoss();
 
-
-			void TargetMoving() {};
+			/**
+			 * @brief 弾丸の非アクティブ化。
+			 */
+			void Deactivate();
 
 
 		private:
@@ -78,6 +93,8 @@ namespace nsApp
 			float m_trajectoryLengthSquared = 0.0f;						//! 弾丸の軌道の長さの二乗。軌道上の最も近い点を計算するために使用。
 			float m_closestPointRatio = 0.0f;							//! 弾丸の軌道上の最も近い点の位置を表す比率。0.0fは前フレームの位置、1.0fは現在の位置を表す。
 			float m_deltaTime = 0.0f;									//! フレームごとの時間差。Update関数内で計算され、軌道計算や寿命減少に使用される。
+
+			bool m_isInUse = false;									    //! 弾丸が現在使用中かどうかを示すフラグ。初期化されるとtrueになり、寿命が尽きるかヒットするとfalseになる。
 		};
 	}
 }

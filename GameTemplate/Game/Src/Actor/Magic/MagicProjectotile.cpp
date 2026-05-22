@@ -16,8 +16,12 @@ namespace nsApp
 
 		void MagicProjectotile::Initialize(MagicType type, const Vector3& spawnPosition, const Vector3& forwardDirection, const MagicParameter& param)
 		{
+			m_isInUse = true;
+			m_target = nullptr;
 			m_magicType = type;
 			m_position = spawnPosition;
+			m_previousPosition = spawnPosition;
+
 
 			/* 寿命と速度を初期化（追尾計算で使うため保存）*/
 			m_currentLifeTime = param.lifeTime;
@@ -35,17 +39,29 @@ namespace nsApp
 			SetDamage(param.damage);
 
 			/* 各ミサイルモデルのパスを初期化 */
-			m_missileMddel.Init(param.modelPath.c_str());
+			if (!m_isModelInitialized)
+			{
+				m_missileMddel.Init(param.modelPath.c_str());
+				m_isModelInitialized = true;
+			}
 
 			/* ミサイルの当たり判定を初期化 */
-			m_magicCollider = NewGO<nsK2Engine::CollisionObject>(0, "MagicCollision");
-			m_magicCollider->CreateSphere(m_position, m_angle, param.radius);
-			m_magicCollider->SetIsEnableAutoDelete(false);
+			if (m_magicCollider == nullptr)
+			{
+				m_magicCollider = NewGO<nsK2Engine::CollisionObject>(0, "MagicCollision");
+				m_magicCollider->CreateSphere(m_position, m_angle, param.radius);
+				m_magicCollider->SetIsEnableAutoDelete(false);
+			}
+			else
+				m_magicCollider->SetPosition(m_position);
 		}
 
 
 		void MagicProjectotile::Update()
 		{
+			if (!m_isInUse)
+				return;
+
 			m_previousPosition = m_position;
 
 			/* フレーム間の時間を取得 */
@@ -58,7 +74,7 @@ namespace nsApp
 			m_currentLifeTime -= deltaTime;
 			if (m_currentLifeTime <= 0.0f)
 			{
-				DeleteGO(this);
+				Deactivate();
 				return;
 			}
 
@@ -73,12 +89,12 @@ namespace nsApp
 			/* モデルの各要素の更新 */
 			m_missileMddel.SetRotation(m_angle);
 			m_missileMddel.SetScale(m_scale);
-			m_missileMddel.SetPosition(m_position); // ★これが抜けていたので描画がバグっていました
+			m_missileMddel.SetPosition(m_position); 
 			m_missileMddel.Update();
 
 			if (CheckHitBoss())
 			{
-				DeleteGO(this);
+				Deactivate();
 				return;
 			}
 		}
@@ -86,6 +102,9 @@ namespace nsApp
 
 		void MagicProjectotile::Render(RenderContext& rc)
 		{
+			if (!m_isInUse)
+				return;
+
 			m_missileMddel.Draw(rc);
 		}
 
@@ -166,6 +185,22 @@ namespace nsApp
 			}
 
 			return false;
+		}
+
+
+		void MagicProjectotile::Deactivate()
+		{
+			m_isInUse = false;
+
+			m_currentLifeTime = 0.0f;
+			m_velocity = Vector3::Zero;
+			m_target = nullptr;
+
+			m_position = Vector3(0.0f, -100000.0f, 0.0f);
+			m_previousPosition = m_position;
+
+			if (m_magicCollider != nullptr)
+				m_magicCollider->SetPosition(m_position);
 		}
 	}
 }

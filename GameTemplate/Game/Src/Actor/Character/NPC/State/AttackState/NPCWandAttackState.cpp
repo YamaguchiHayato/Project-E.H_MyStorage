@@ -14,7 +14,8 @@ namespace
 
 	/* 時間（フレーム）関連 */
 	const auto ATTACK_DURATION = 40;               //! 攻撃モーションが継続し、敵の方を向き続ける時間
-	const auto ATTACK_RESET_TIME = 70;             //! 次の行動（再抽選）に移るまでの総時間
+	const auto ATTACK_RESET_TIME = 70;             //! 通常の終了判定時間
+	const auto ATTACK_FORCE_RESET_TIME = 120;      //! アニメーションが終わらない場合の保険
 
 	/* コンボ入力のタイミング（フレーム） */
 	const auto COMBO_FIRST_INPUT = 1;              //! 1段目のボタン入力タイミング
@@ -76,13 +77,26 @@ namespace nsApp
 			/* めり込み防止。*/
 			PreventClipping(target);
 
-			/* ステートの再抽選。*/
+			/* 通常終了。アニメーションが終わっていれば安全に待機へ戻る。*/
 			if (m_attackTimer > ATTACK_RESET_TIME && !m_getBody->IsPlayAnimation())
 			{
+				if (m_virtualInput != nullptr)
+					m_virtualInput->Reset();
+
 				m_stateMachine->ChangeState(new NPCIdleState());
 				return;
 			}
-	}
+
+			/* 保険。アニメーション終了判定が戻らない場合でも永久停止しないようにする。*/
+			if (m_attackTimer > ATTACK_FORCE_RESET_TIME)
+			{
+				if (m_virtualInput != nullptr)
+					m_virtualInput->Reset();
+
+				m_stateMachine->ChangeState(new NPCIdleState());
+				return;
+			}
+		}
 
 
 		void NPCWandAttackState::ExecuteCurrentCombo()
