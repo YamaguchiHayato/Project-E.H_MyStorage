@@ -1,35 +1,52 @@
 #include "stdafx.h"
 #include "DamageProcessor.h"
-#include "PresentDamageIndicator.h"
+#include "DamageIndicatorPool.h"
+
+namespace
+{
+	const auto DAMAGE_TEXT_OFFSET_Y = 120.0f; //! ダメージテキストのY軸オフセット。
+}
+
 
 namespace nsApp
 {
+	DamageIndicatorPool* DamageProcessor::m_damageIndicatorPool = nullptr;
+
+
+	void DamageProcessor::SetDamageIndicatorPool(DamageIndicatorPool* damageIndicatorPool)
+	{
+		m_damageIndicatorPool = damageIndicatorPool;
+	}
+
+
 	bool DamageProcessor::ApplyDamage(const DamageRequest& request)
 	{
-#ifdef _DEBUG
-		char log[256];
-		sprintf_s(
-			log,
-			"[DamageProcessor] target=%p damage=%d pos=(%.1f, %.1f, %.1f)\n",
-			request.target,
-			request.damageAmount,
-			request.hitPosition.x,
-			request.hitPosition.y,
-			request.hitPosition.z
-		);
-		OutputDebugStringA(log);
-#endif
-
 		if (!IsValidRequest(request))
 			return false;
 
 		/* ダメージを付与。*/
 		request.target->ApplyDamage(request.damageAmount);
 
-		/* フォントを生成。*/
+		/* ダメージフォントの表示を依頼。*/
 		SpawnDamageIndicator(request.damageAmount, request.hitPosition);
 
 		return true;
+	}
+
+
+	DamageRequest DamageProcessor::BuildTargetDamageRequest(nsActor::ICharacter* targetCharacter, int damageAmount)
+	{
+		DamageRequest request;
+		request.target = targetCharacter;
+		request.damageAmount = damageAmount;
+
+		if (targetCharacter != nullptr)
+		{
+			request.hitPosition = targetCharacter->GetPosition();
+			request.hitPosition.y += DAMAGE_TEXT_OFFSET_Y;
+		}
+
+		return request;
 	}
 
 
@@ -49,7 +66,9 @@ namespace nsApp
 
 	void DamageProcessor::SpawnDamageIndicator(int damageValue, const Vector3& position)
 	{
-		auto damageIndicator = NewGO<PresentDamageIndicator>(0, "damageUI");
-		damageIndicator->Init(damageValue, position);
+		if (m_damageIndicatorPool == nullptr)
+			return;
+
+		m_damageIndicatorPool->SpawnDamageText(damageValue, position);
 	}
 }

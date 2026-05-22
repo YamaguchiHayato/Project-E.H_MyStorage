@@ -232,8 +232,8 @@
     <ClCompile Include="BossIdleState.cpp" />
     <ClCompile Include="BossMoveState.cpp" />
     <ClCompile Include="BossRoarState.cpp" />
+    <ClCompile Include="Src\Actor\Character\Common\Damage\DamageIndicatorPool.cpp" />
     <ClCompile Include="Src\Actor\Character\Common\Damage\DamageProcessor.cpp" />
-    <ClCompile Include="Src\Actor\Character\Common\Damage\DamageRequest.cpp" />
     <ClCompile Include="FireAttackStrategy.cpp" />
     <ClCompile Include="Game2.cpp" />
     <ClCompile Include="Src\Actor\Character\Player\InputSystem\PlayerControlerHub.cpp" />
@@ -339,10 +339,13 @@
     <ClInclude Include="BossIdleState.h" />
     <ClInclude Include="BossMoveState.h" />
     <ClInclude Include="BossRoarState.h" />
+    <ClInclude Include="Src\Actor\Character\Common\Damage\DamageIndicatorPool.h" />
     <ClInclude Include="Src\Actor\Character\Common\Damage\DamageProcessor.h" />
     <ClInclude Include="Src\Actor\Character\Common\Damage\DamageRequest.h" />
     <ClInclude Include="FireAttackStrategy.h" />
     <ClInclude Include="Game2.h" />
+    <ClInclude Include="Src\Actor\Character\Common\Pool\GameObjectPool.h" />
+    <ClInclude Include="Src\Actor\Character\Common\Pool\IPoolable.h" />
     <ClInclude Include="Src\Actor\Character\Player\InputSystem\PlayerControlerHub.h" />
     <ClInclude Include="Src\Actor\Character\Player\InputSystem\GamePadInputAdapter.h" />
     <ClInclude Include="IBossAttackStrategy.h" />
@@ -439,6 +442,9 @@
     <ClInclude Include="Src\UIAnimation\UIAnimation.h" />
     <ClInclude Include="Src\Actor\Character\Common\WeaponHitDetection.h" />
     <ClInclude Include="Src\Debug\Sandbag.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Src\Actor\Character\Common\Pool\GameObjectPool.inl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

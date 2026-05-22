@@ -230,8 +230,8 @@
     <ClCompile Include="Src\Actor\Character\Player\InputSystem\PlayerControlerHub.cpp" />
     <ClCompile Include="Src\Debug\Sandbag.cpp" />
     <ClCompile Include="BossRoarState.cpp" />
-    <ClCompile Include="Src\Actor\Character\Common\Damage\DamageRequest.cpp" />
     <ClCompile Include="Src\Actor\Character\Common\Damage\DamageProcessor.cpp" />
+    <ClCompile Include="Src\Actor\Character\Common\Damage\DamageIndicatorPool.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
@@ -427,5 +427,11 @@
     <ClInclude Include="BossRoarState.h" />
     <ClInclude Include="Src\Actor\Character\Common\Damage\DamageRequest.h" />
     <ClInclude Include="Src\Actor\Character\Common\Damage\DamageProcessor.h" />
+    <ClInclude Include="Src\Actor\Character\Common\Pool\IPoolable.h" />
+    <ClInclude Include="Src\Actor\Character\Common\Pool\GameObjectPool.h" />
+    <ClInclude Include="Src\Actor\Character\Common\Damage\DamageIndicatorPool.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Src\Actor\Character\Common\Pool\GameObjectPool.inl" />
   </ItemGroup>
 </Project>

@@ -1,5 +1,5 @@
 #pragma once
-/* 
+/*
  * @file    DamageProcessor.h
  * @brief   DamageRequestを元にダメージ数を描画する。
  * @author  Yamaguchi Hayato
@@ -11,21 +11,50 @@
 
 namespace nsApp
 {
+	class DamageIndicatorPool;
+
 	class DamageProcessor final
 	{
 	public:
 		/* コンストラクタとデストラクタ。*/
 		DamageProcessor() = delete;
-		virtual ~DamageProcessor() = delete;
+		~DamageProcessor() = delete;
 
 
 	public:
+		/**
+		 * @brief ダメージ表示用プールを設定する。
+		 * @param damageIndicatorPool ダメージ表示用プール。
+		 */
+		static void SetDamageIndicatorPool(DamageIndicatorPool* damageIndicatorPool);
+
 		/**
 		 * @brief ダメージ数を描画する。
 		 * @param request ダメージフォントを描画する際に必要な構造体。
 		 * @return 描画に成功できたかどうかのフラグ。
 		 */
 		static bool ApplyDamage(const DamageRequest& request);
+
+		/**
+		 * @brief ダメージリクエストを構築する。
+		 * @param targetCharacter ダメージを受けるキャラクター。
+		 * @param damageAmount ダメージ量。
+		 * @return 構築されたダメージリクエスト。
+		 */
+		static DamageRequest BuildTargetDamageRequest(nsActor::ICharacter* targetCharacter, int damageAmount);
+
+		/**
+		 * @brief ダメージを適応する。
+		 * @param targetCharacter ダメージを受けるキャラクター。
+		 * @param damageAmount ダメージ量。
+		 * @param textOffsetY ダメージテキストのY軸オフセット。デフォルトは120.0f。
+		 * @return ダメージ適用に成功したらtrue。
+		 */
+		inline static bool ApplyDamageToTarget(nsActor::ICharacter* targetCharacter, int damageAmount, float textOffsetY = 120.0f)
+		{
+			const DamageRequest request = BuildTargetDamageRequest(targetCharacter, damageAmount);
+			return ApplyDamage(request);
+		}
 
 
 	private:
@@ -42,5 +71,9 @@ namespace nsApp
 		 * @param position 表示位置。
 		 */
 		static void SpawnDamageIndicator(int damageValue, const Vector3& position);
+
+
+	private:
+		static DamageIndicatorPool* m_damageIndicatorPool; //! ダメージ表示用プール。
 	};
 }

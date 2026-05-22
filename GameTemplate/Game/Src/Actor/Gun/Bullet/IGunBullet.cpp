@@ -7,6 +7,7 @@ namespace
 {
 	const auto BOSS_CENTER_OFFSET_Y = 50.0f;            //! ボスの中心を狙うためのY軸オフセット
 	const auto BOSS_HIT_DISTANCE_THRESHOLD = 150.0f;    //! 線分判定でヒットとする許容距離
+	const auto DAMAGE_TEXT_OFFSET_Y = 120.0f;
 }
 
 namespace nsApp
@@ -94,12 +95,16 @@ namespace nsApp
 			if (m_bulletCollider == nullptr)
 				return false;
 
-			auto boss = m_boss;
-			if (m_boss != nullptr && reinterpret_cast<uintptr_t>(m_boss) != 0xFFFFFFFFFFFFFFFF)
+			if (m_boss != nullptr && reinterpret_cast<uintptr_t>(m_boss))
 			{
+				auto applyDamageToBoss = [this]()
+				{
+						DamageProcessor::ApplyDamageToTarget(m_boss, static_cast<int>(m_param.damage));
+				};
+
 				if (m_bulletCollider->IsHit(m_boss->GetController()))
 				{
-					m_boss->ApplyDamage(static_cast<int>(m_param.damage));
+					applyDamageToBoss();
 					return true;
 				}
 
@@ -121,15 +126,14 @@ namespace nsApp
 
 						if (m_distanceToBoss < BOSS_HIT_DISTANCE_THRESHOLD)
 						{
-							m_request.target = m_boss;
-							m_request.damageAmount = static_cast<int>(m_param.damage);
-							m_request.hitPosition = m_position;
-							DamageProcessor::ApplyDamage(m_request);
+							applyDamageToBoss();
 							return true;
 						}
 					}
 				}
+
 			}
+
 			return false;
 		}
 	}

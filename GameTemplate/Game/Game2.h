@@ -14,6 +14,7 @@ namespace nsApp
 	class GameEndSelect;
 	class PlayerGenerator;
 	class PlayerControlerHub;
+	class DamageIndicatorPool;
 
 	namespace nsSound {
 		class SoundLister;
@@ -101,6 +102,7 @@ namespace nsApp
 			nsApp::Camera* m_camera = nullptr;
 			nsActor::Player* m_player = nullptr;
 			nsActor::Boss* m_boss = nullptr;
+			DamageIndicatorPool* m_damageIndicatorPool = nullptr;
 			CharacterHP* m_characterHP = nullptr;
 			GameTimeLimit* m_gameTimeLimit = nullptr;
 			GameStartDirection* m_gameStartDirection = nullptr;

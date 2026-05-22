@@ -13,6 +13,7 @@ namespace nsApp
 				DeleteGO(m_magicCollider);
 		}
 
+
 		void MagicProjectotile::Initialize(MagicType type, const Vector3& spawnPosition, const Vector3& forwardDirection, const MagicParameter& param)
 		{
 			m_magicType = type;
@@ -41,6 +42,7 @@ namespace nsApp
 			m_magicCollider->CreateSphere(m_position, m_angle, param.radius);
 			m_magicCollider->SetIsEnableAutoDelete(false);
 		}
+
 
 		void MagicProjectotile::Update()
 		{
@@ -121,42 +123,48 @@ namespace nsApp
 
 		bool MagicProjectotile::CheckHitBoss()
 		{
-			if (m_magicCollider == nullptr) return false;
+			if (m_magicCollider == nullptr)
+				return false;
 
-			auto boss = FindGO<nsActor::Boss>("boss"); // 銃と表記を統一（大文字のBoss）
-			if (boss != nullptr && reinterpret_cast<uintptr_t>(boss) != 0xFFFFFFFFFFFFFFFF)
-			{
-				if (m_magicCollider->IsHit(boss->GetController())) {
-					boss->ApplyDamage(static_cast<int>(m_damage));
-					return true;
-				}
+			auto*boss = FindGO<nsActor::Boss>("boss");
+			if (boss == nullptr || reinterpret_cast<uintptr_t>(boss) == 0xFFFFFFFFFFFFFFFF)
+				return false;
 
-				m_bossPosition = boss->GetPosition();
-				m_bossPosition.y += 50.0f;
-
-				m_missileTrajectory = m_position - m_previousPosition;
-				m_vectorToBossTarget = m_bossPosition - m_previousPosition;
-				m_trajectoryLengthSquared = m_missileTrajectory.LengthSq();
-
-				if (m_trajectoryLengthSquared > 0.0f)
+			auto applyDamageToBoss = [this, boss]()
 				{
-					m_closestPointRatio = m_vectorToBossTarget.Dot(m_missileTrajectory) / m_trajectoryLengthSquared;
+					DamageProcessor::ApplyDamageToTarget(boss, static_cast<int>(m_damage));
+				};
 
-					if (m_closestPointRatio >= 0.0f && m_closestPointRatio <= 1.0f)
+			if (m_magicCollider->IsHit(boss->GetController()))
+			{
+				applyDamageToBoss();
+				return true;
+			}
+
+			m_bossPosition = boss->GetPosition();
+			m_bossPosition.y += 50.0f;
+
+			m_missileTrajectory = m_position - m_previousPosition;
+			m_vectorToBossTarget = m_bossPosition - m_previousPosition;
+			m_trajectoryLengthSquared = m_missileTrajectory.LengthSq();
+
+			if (m_trajectoryLengthSquared > 0.0f)
+			{
+				m_closestPointRatio = m_vectorToBossTarget.Dot(m_missileTrajectory) / m_trajectoryLengthSquared;
+
+				if (m_closestPointRatio >= 0.0f && m_closestPointRatio <= 1.0f)
+				{
+					m_closestPointOnTrajectory = m_previousPosition + (m_missileTrajectory * m_closestPointRatio);
+					m_distanceToBoss = (m_bossPosition - m_closestPointOnTrajectory).Length();
+
+					if (m_distanceToBoss < 150.0f)
 					{
-						m_closestPointOnTrajectory = m_previousPosition + (m_missileTrajectory * m_closestPointRatio);
-						m_distanceToBoss = (m_bossPosition - m_closestPointOnTrajectory).Length();
-
-						if (m_distanceToBoss < 150.0f) {
-							m_request.target = boss;
-							m_request.damageAmount = static_cast<int>(m_param.damage);
-							m_request.hitPosition = m_position;
-							DamageProcessor::ApplyDamage(m_request);
-							return true;
-						}
+						applyDamageToBoss();
+						return true;
 					}
 				}
 			}
+
 			return false;
 		}
 	}

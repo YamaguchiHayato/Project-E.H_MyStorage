@@ -91,13 +91,19 @@ namespace nsApp
 
 		/* ゲッター。*/
 		public:
-			/* 魔法の種類を取得。*/
+			/* 
+			 * @brief 魔法の種類を取得。
+			 */
 			inline MagicType GetMagicType() const
 			{
 				return m_magicType;
 			}
 
-			/* モデル名を取得。*/
+			/* 
+			 * @brief モデル名を取得。
+			 * @param modelName モデル名。
+			 * @return モデルのパス。
+			 */
 			inline const std::string SearchMissileModelPath(const std::string& modelName)
 			{
 				return "Assets/modelData/Character/Weapon/" + modelName + ".tkm";
@@ -121,8 +127,8 @@ namespace nsApp
 		private:
 			nsActor::ICharacter* m_target = nullptr;			 //! 目標。
 			nsK2Engine::CollisionObject* m_magicCollider;        //! 魔法の当たり判定を管理するクラス。
-
 			
+
 		private:
 			MagicType m_magicType = MagicType::enNone;           //! 魔法の種類。
 
@@ -147,8 +153,6 @@ namespace nsApp
 			Quaternion m_angleY = Quaternion::Identity;          //! Y軸の回転角。
 			Quaternion m_angleZ = Quaternion::Identity;          //! Z軸の回転角。
 
-			BulletParameter m_param;									//! 弾丸のパラメータ。 
-			DamageRequest m_request;
 			ModelRender m_missileMddel;							 //! ミサイルを描画するレンダー。
 
 			float m_currentLifeTime = 0.0f;                      //! 秒数管理用の寿命			

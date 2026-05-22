@@ -65,6 +65,7 @@ namespace nsApp
 			Vector3 m_bulletTrajectory = Vector3::Zero;					//! 弾丸の軌道ベクトル。前フレームからの移動量。
 			Vector3 m_vectorToBossTarget = Vector3::Zero;				//! ボスへのベクトル。前フレームからボスへの距離を表す。
 			Vector3 m_closestPointOnTrajectory = Vector3::Zero;			//! 弾丸の軌道上の最も近い点。ボスへの距離計算に使用。
+			Vector3 m_hitPosition = Vector3::Zero;						//! ボスにヒットした位置。ダメージテキストの表示位置などに使用。
 
 			Quaternion m_angle = Quaternion::Identity;					//! 弾丸の回転角。モデルの向きに合わせて設定。
 			Quaternion m_direction = Quaternion::Identity;				//! 弾丸の向き。前方向ベクトルから計算される。

@@ -20,6 +20,9 @@
 #include "Src/Actor/Character/Player/Component/PlayerGenerator.h"
 #include "Src/Actor/Character/Player/InputSystem/PlayerControlerHub.h"
 
+#include "Src/Actor/Character/Common/Damage/DamageIndicatorPool.h"
+#include "Src/Actor/Character/Common/Damage/DamageProcessor.h"
+
 namespace
 {
 	const auto INIT_CHARACTER_POSITION_Y = 50.0f;
@@ -30,6 +33,7 @@ namespace
 	const auto INIT_CHARACTER_POSITION_PLAYER3 = Vector3(-50.0f, INIT_CHARACTER_POSITION_Y, INIT_CHARACTER_POSITION_Z);
 	const auto INIT_CHARACTER_POSITION_PLAYER4 = Vector3(50.0f, INIT_CHARACTER_POSITION_Y, INIT_CHARACTER_POSITION_Z);
 }
+
 
 namespace nsApp
 {
@@ -48,6 +52,11 @@ namespace nsApp
 			DeleteGO(m_gameEndSelect);
 
 			m_player = nullptr;
+
+			DamageProcessor::SetDamageIndicatorPool(nullptr);
+			DeleteGO(m_damageIndicatorPool);
+			m_damageIndicatorPool = nullptr;
+
 			delete m_generator;
 			delete m_playerHub;
 		}
@@ -73,6 +82,10 @@ namespace nsApp
 
 			/*ボスを作成。*/
 			m_boss = NewGO<nsActor::Boss>(0, "boss");
+
+			/* ダメージプールを生成。*/
+			m_damageIndicatorPool = NewGO<DamageIndicatorPool>(0, "damagePool");
+			DamageProcessor::SetDamageIndicatorPool(m_damageIndicatorPool);
 
 			/* プレイアブルキャラを生成する。*/
 			SpawnPlayCharacter();
