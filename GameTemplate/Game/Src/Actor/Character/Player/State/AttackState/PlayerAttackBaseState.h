@@ -13,6 +13,7 @@
 #include "Src/Actor/Magic/MagicProjectotile.h"
 #include "Src/Actor/Magic/Factory/MagicFactory.h"
 #include "Src/Actor/Character/Player/Component/ComboRouteTable.h"
+#include "Src/Actor/Character/NPC/Component/NPCCombatHelper.h"
 
 /** @def
  * プレイヤーの遷移状態を PLAYER_STATE_IDという名前で定義するマクロ。
@@ -101,6 +102,7 @@ namespace nsApp
 			}
 
 
+
 		/* セッター。*/
 		public:
 			/**
@@ -137,7 +139,6 @@ namespace nsApp
 				m_player->GetGunShooter().Fire(request);
 			}
 
-
 			/**
 			 * @brief 魔法の生成
 			 * @param type 生成する魔法の種類。
@@ -148,7 +149,14 @@ namespace nsApp
 			{
 				m_spawnPosition = m_player->GetWeaponHitDetection().GetPosition();
 				m_forwardDirection = m_player->GetForwardVector();
-				MagicFactory::CreateMagicObject(type, m_spawnPosition, m_forwardDirection, target);
+
+				MagicFactory::CreateMagicObject(
+					type,
+					m_spawnPosition,
+					m_forwardDirection,
+					target,
+					&m_player->GetEffectList()
+				);
 			}
 
 
@@ -162,9 +170,17 @@ namespace nsApp
 			 */
 			inline void ConstructAndTransmitMagicRequest(nsActor::MagicType type, const Vector3& customPos, const Vector3& customDir, nsActor::ICharacter* target = nullptr)
 			{
-				MagicFactory::CreateMagicObject(type, customPos, customDir, target);
-			}
+				m_spawnPosition = customPos;
+				m_forwardDirection = customDir;
 
+				MagicFactory::CreateMagicObject(
+					type,
+					customPos,
+					customDir,
+					target,
+					&m_player->GetEffectList()
+				);
+			}
 
 		protected:
 			/**
@@ -191,6 +207,14 @@ namespace nsApp
 			 * @return ダメージリクエスト構造体。
 			 */
 			DamageRequest BuildDamageRequest(nsActor::ICharacter* target, int damageAmount) const;
+
+			/**
+			 * @brief 攻撃の終了時に共通して行う処理。
+			 */
+			virtual bool UseCommonEndTransition() const
+			{
+				return true;
+			}
 
 
 		protected:

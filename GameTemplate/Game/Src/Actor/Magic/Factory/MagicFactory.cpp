@@ -31,7 +31,7 @@ namespace
 
 namespace nsApp
 {
-	void MagicFactory::CreateMagicObject(nsActor::MagicType type, const Vector3& basePosition, const Vector3& forward, nsActor::ICharacter* target)
+	void MagicFactory::CreateMagicObject(MAGICTYPE type,const Vector3& basePosition,const Vector3& forward,CHARACTER* target,EFFECT* effectList)
 	{
 		/* テーブルから魔法の種類の情報を取りだす。*/
 		const auto& magicParameter = MagicParameterTable::GetParameter(type);
@@ -40,7 +40,7 @@ namespace nsApp
 		Vector3 localForwardPosition = forward;
 		localForwardPosition.Normalize();
 
-		/* 生成座標を正規化し、補正する。*/
+		/* 生成座標を補正する。*/
 		Vector3 localSpawnPosition = basePosition;
 		localSpawnPosition.y += magicParameter.spawnOffsetY;
 		localSpawnPosition += localForwardPosition * magicParameter.forwardOffset;
@@ -66,6 +66,7 @@ namespace nsApp
 		if (createMagic)
 		{
 			createMagic->Initialize(type, localSpawnPosition, localForwardPosition, magicParameter);
+			createMagic->SetEffectList(effectList);
 
 			if (target)
 				createMagic->SetTarget(target);

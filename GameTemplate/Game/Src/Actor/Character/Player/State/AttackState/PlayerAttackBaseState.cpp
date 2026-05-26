@@ -83,7 +83,7 @@ namespace nsApp
 			OnAttackTick();
 
 			/* 終了判定。*/
-			if (m_attackTimer > 5 && !m_player->IsPlayAnimation())
+			if (UseCommonEndTransition() && m_attackTimer > ATTACK_END_FRAME && !m_player->IsPlayAnimation())
 			{
 				/* Idle状態へ遷移。*/
 				m_stateMachine->ChangeState(new PlayerIdleState());
@@ -105,7 +105,7 @@ namespace nsApp
 				}
 
 				/* 終了判定。*/
-				if (m_attackTimer > ATTACK_END_FRAME && !m_player->IsPlayAnimation())
+				if (UseCommonEndTransition() && m_attackTimer > ATTACK_END_FRAME && !m_player->IsPlayAnimation())
 				{
 					m_stateMachine->ChangeState(new PlayerIdleState());
 					return;

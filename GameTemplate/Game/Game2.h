@@ -117,6 +117,26 @@ namespace nsApp
 			////////////////////////////////////////////////////////
 			PlayerGenerator* m_generator = nullptr;
 			PlayerControlerHub* m_playerHub = nullptr;
+
+
+#ifdef  _DEBUG
+			/**
+			 * @brief デバッグ用の回復テスト関数。
+			 */
+			void DebugUpdateHealTest();
+
+			/**
+			 * @brief デバッグ用のダメージテスト関数。
+			 */
+			void DebugDamageParty();
+
+			/**
+		     * @brief デバッグ用のHP表示関数。
+			 */
+			void DebugPrintPartyHP();
+#endif //  _DEBUG
+
+
 		};
 	}
 }

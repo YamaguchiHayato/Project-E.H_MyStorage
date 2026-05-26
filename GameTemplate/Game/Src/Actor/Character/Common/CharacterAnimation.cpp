@@ -328,7 +328,8 @@ namespace nsApp
 			 */
 			if (pair.first == CharacterBasicAnimationList::Hit_Fly ||
 				pair.first == CharacterBasicAnimationList::Hit_UP ||
-				pair.first == CharacterBasicAnimationList::Help)
+				pair.first == CharacterBasicAnimationList::Help||
+				pair.first == CharacterBasicAnimationList::Death)
 				/* ダメージと死亡はループさせない。*/
 				/* true だと ループ。*/
 				m_isLoop = false;

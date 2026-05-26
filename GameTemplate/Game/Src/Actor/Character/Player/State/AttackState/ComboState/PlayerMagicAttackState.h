@@ -40,6 +40,11 @@ namespace nsApp
 
 		private:
 			nsK2EngineLow::EffectEmitter* m_laserEffect = nullptr; //! 発射する魔法の弾。
+
+
+		private:
+			bool m_hasSpawnedLaserEffect = false;	//! レーザーエフェクトを生成済みか。
+			bool m_canExecuteMagicAttack = false;   //! 魔法攻撃を実行できるか。
 		};
 	}
 }

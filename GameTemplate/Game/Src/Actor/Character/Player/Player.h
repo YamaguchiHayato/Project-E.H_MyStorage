@@ -17,8 +17,12 @@
 #include "Src/Effect/EffectList.h"
 #include "Src/Effect/EffectListener.h"
 
+#include "Src/Actor/Character/NPC/Component/RescueStatusManager.h"
+
+
 namespace nsApp
 {
+
 	namespace nsEffect {
 		class EffectList;
 	}
@@ -106,6 +110,8 @@ namespace nsApp
 			/* すり抜け計算。*/
 			void ComputeSlipThrough();
 
+			/* クランプ制限。*/
+			Vector3 ClampBattleAreaMoveVector(const Vector3& moveVector, float frameTime) const;
 
 		public:
 			/* 
@@ -157,6 +163,17 @@ namespace nsApp
 			{
 				m_model.ResetSubWeaponModel();
 			}
+
+			/**
+			 * @brief 戦闘エリア制限を考慮してプレイヤーを移動させる。
+			 * @param moveDelta 今回フレームで移動したい量。
+			 */
+			void MoveWithBattleClamp(const Vector3& moveDelta, float deltaTime);
+
+			/**
+			 * @brief 死亡判定。
+			 */
+			void CheckDeth();
 
 
 		/* セッター。*/
@@ -346,6 +363,33 @@ namespace nsApp
 				return m_brain;
 			}
 
+			/**
+			 * @brief 死亡判定。HPが0以下、もしくは死亡フラグが立っている場合はtrueを返す。
+			 * @return 死亡している場合はtrue、そうでない場合はfalse。
+			 */
+			inline bool IsDeath() const
+			{
+				return m_isDead || m_characterStatus.hp.currentHP <= 0;
+			}
+
+			/**
+			 * @brief 救助状態管理クラスを取得する。
+			 * @return 救助状態管理クラスの参照。
+			 */
+			inline RescueStatusManager& GetRescueStatusManager()
+			{
+				return m_rescueStatusManager;
+			}
+
+			/**
+			 * @brief 救助状態管理クラスを取得する。
+			 * @return 救助状態管理クラス。
+			 */
+			inline const RescueStatusManager& GetRescueStatusManager() const
+			{
+				return m_rescueStatusManager;
+			}
+
 
 		private:
 			nsK2EngineLow::EffectEmitter* m_chargeEffect = nullptr;                                                //! チャージエフェクトのリモコン       
@@ -359,6 +403,7 @@ namespace nsApp
 			CharacterModelType m_modelType;                                                                        //! プレイヤーのモデルの種類。
 			WeaponHitDetection m_weaponHitDetection;                                                               //! 武器の当たり判定を管理するクラス。
 			WeaponType m_currentWeapon = WeaponType::None;                                                         //! 現在の武器。@TODO 武器の種類を増やす際に要調整。
+			RescueStatusManager m_rescueStatusManager;															   //! 救助状態管理クラス
 
 
 		/* ステート生成。*/
@@ -387,6 +432,7 @@ namespace nsApp
 
 			Vector3 m_currentPosition = Vector3::Zero;                                                             //! プレイヤーの現在位置。
 			Vector3 m_forwardVector = Vector3::Zero;                                                               //! プレイヤーの前方向ベクトル。
+			Vector3 m_getPosition = Vector3::Zero;                                                                 //! プレイヤーの座標を取得。。
 
 			Matrix m_subWeaponHandMatrix;                                                                          //! サブ武器を装備させるときの左手のボーンの行列を管理する変数。
 

@@ -23,6 +23,11 @@
 #include "Src/Actor/Character/Common/Damage/DamageIndicatorPool.h"
 #include "Src/Actor/Character/Common/Damage/DamageProcessor.h"
 
+#ifdef _DEBUG
+#include <Windows.h>
+#endif // DEBUG
+
+
 namespace
 {
 	const auto INIT_CHARACTER_POSITION_Y = 50.0f;
@@ -34,11 +39,135 @@ namespace
 	const auto INIT_CHARACTER_POSITION_PLAYER4 = Vector3(50.0f, INIT_CHARACTER_POSITION_Y, INIT_CHARACTER_POSITION_Z);
 }
 
+namespace
+{
+	bool IsTriggerKey(int keyCode)
+	{
+		static SHORT prevKeyState[256] = { 0 };
+
+		SHORT currentKeyState = GetAsyncKeyState(keyCode);
+		bool isCurrentDown = (currentKeyState & 0x8000) != 0;
+		bool isPrevDown = (prevKeyState[keyCode] & 0x8000) != 0;
+
+		prevKeyState[keyCode] = currentKeyState;
+
+		return isCurrentDown && !isPrevDown;
+	}
+}
 
 namespace nsApp
 {
 	namespace nsGame
 	{
+
+#ifdef _DEBUG
+		void Game2::DebugUpdateHealTest()
+		{
+			/* 1キーで味方全員にデバッグダメージを与える。*/
+			if (IsTriggerKey('1'))
+			{
+				OutputDebugStringA("[DEBUG] 1 DamageParty\n");
+				DebugDamageParty();
+			}
+
+			/* 2キーで味方全員のHPを表示する。*/
+			if (IsTriggerKey('2'))
+			{
+				OutputDebugStringA("[DEBUG] 2 PrintPartyHP\n");
+				DebugPrintPartyHP();
+			}
+		}
+
+		void Game2::DebugDamageParty()
+		{
+			constexpr int DEBUG_DAMAGE = 300;
+
+			const char* playerNames[] =
+			{
+				"player1",
+				"player2",
+				"player3",
+				"player4"
+			};
+
+			for (const char* name : playerNames)
+			{
+				auto player = FindGO<nsActor::Player>(name);
+
+				if (player == nullptr)
+				{
+					char debugText[256];
+					sprintf_s(
+						debugText,
+						"[DEBUG DAMAGE] %s not found\n",
+						name
+					);
+
+					OutputDebugStringA(debugText);
+					continue;
+				}
+
+				player->ApplyDamage(DEBUG_DAMAGE);
+
+				const auto& hp = player->GetCharacterStatus().hp;
+
+				char debugText[256];
+				sprintf_s(
+					debugText,
+					"[DEBUG DAMAGE] %s HP: %d / %d\n",
+					name,
+					hp.currentHP,
+					hp.maxHP
+				);
+
+				OutputDebugStringA(debugText);
+			}
+		}
+
+		void Game2::DebugPrintPartyHP()
+		{
+			const char* playerNames[] =
+			{
+				"player1",
+				"player2",
+				"player3",
+				"player4"
+			};
+
+			for (const char* name : playerNames)
+			{
+				auto player = FindGO<nsActor::Player>(name);
+
+				if (player == nullptr)
+				{
+					char debugText[256];
+					sprintf_s(
+						debugText,
+						"[DEBUG HP] %s not found\n",
+						name
+					);
+
+					OutputDebugStringA(debugText);
+					continue;
+				}
+
+				const auto& hp = player->GetCharacterStatus().hp;
+
+				char debugText[256];
+				sprintf_s(
+					debugText,
+					"[DEBUG HP] %s HP: %d / %d\n",
+					name,
+					hp.currentHP,
+					hp.maxHP
+				);
+
+				OutputDebugStringA(debugText);
+			}
+		}
+#endif // !DEBUG
+
+
 		Game2::~Game2()
 		{
 			nsApp::nsStage::LoadStageData::GetInstance().ChangeStage(nsApp::nsStage::StageID::Invalid);
@@ -114,6 +243,11 @@ namespace nsApp
 
 		void Game2::Update()
 		{
+#ifdef _DEBUG
+			DebugUpdateHealTest();
+#endif // _DEBUG
+
+
 			if(m_playerHub)
 				m_playerHub->Update();
 
@@ -168,6 +302,7 @@ namespace nsApp
 					}
 				}
 			}
+
 
 			/* 現在のステージの更新を行う。*/
 			nsApp::nsStage::LoadStageData::GetInstance().Update();

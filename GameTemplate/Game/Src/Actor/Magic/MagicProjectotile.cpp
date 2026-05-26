@@ -3,6 +3,8 @@
 #include "Src/Actor/Character/Common/Damage/DamageProcessor.h"
 #include "Boss.h"
 
+#include "Src/Effect/EffectList.h"
+
 namespace nsApp
 {
 	namespace nsActor
@@ -41,8 +43,17 @@ namespace nsApp
 			/* 各ミサイルモデルのパスを初期化 */
 			if (!m_isModelInitialized)
 			{
-				m_missileMddel.Init(param.modelPath.c_str());
+				m_missileModel = std::make_unique<ModelRender>();
+				m_missileModel->Init(param.modelPath.c_str());
 				m_isModelInitialized = true;
+			}
+
+			if (m_missileModel != nullptr)
+			{
+				m_missileModel->SetScale(m_scale);
+				m_missileModel->SetRotation(m_angle);
+				m_missileModel->SetPosition(m_position);
+				m_missileModel->Update();
 			}
 
 			/* ミサイルの当たり判定を初期化 */
@@ -86,12 +97,13 @@ namespace nsApp
 			if (m_magicCollider != nullptr)
 				m_magicCollider->SetPosition(m_position);
 
-			/* モデルの各要素の更新 */
-			m_missileMddel.SetRotation(m_angle);
-			m_missileMddel.SetScale(m_scale);
-			m_missileMddel.SetPosition(m_position); 
-			m_missileMddel.Update();
-
+			if (m_missileModel != nullptr)
+			{
+				m_missileModel->SetRotation(m_angle);
+				m_missileModel->SetScale(m_scale);
+				m_missileModel->SetPosition(m_position);
+				m_missileModel->Update();
+			}
 			if (CheckHitBoss())
 			{
 				Deactivate();
@@ -105,7 +117,8 @@ namespace nsApp
 			if (!m_isInUse)
 				return;
 
-			m_missileMddel.Draw(rc);
+			if (m_missileModel != nullptr)
+				m_missileModel->Draw(rc);
 		}
 
 
@@ -130,6 +143,8 @@ namespace nsApp
 
 					if (m_currentDirection.Length() > 0.001f)
 					{
+						m_currentDirection.Normalize();
+
 						m_newPosition.Lerp(0.08f * 60.0f * deltaTime, m_currentDirection, m_toTargetVector);
 						m_newPosition.Normalize();
 						m_velocity = m_newPosition * m_moveSpeed; // 秒間速度を掛け直す
@@ -157,6 +172,7 @@ namespace nsApp
 			if (m_magicCollider->IsHit(boss->GetController()))
 			{
 				applyDamageToBoss();
+				PlayHitEffect(m_position);
 				return true;
 			}
 
@@ -179,6 +195,7 @@ namespace nsApp
 					if (m_distanceToBoss < 150.0f)
 					{
 						applyDamageToBoss();
+						PlayHitEffect(m_closestPointOnTrajectory);
 						return true;
 					}
 				}
@@ -195,12 +212,30 @@ namespace nsApp
 			m_currentLifeTime = 0.0f;
 			m_velocity = Vector3::Zero;
 			m_target = nullptr;
+			m_effectList = nullptr;
 
 			m_position = Vector3(0.0f, -100000.0f, 0.0f);
 			m_previousPosition = m_position;
 
 			if (m_magicCollider != nullptr)
 				m_magicCollider->SetPosition(m_position);
+		}
+
+
+		void MagicProjectotile::PlayHitEffect(const Vector3& position)
+		{
+			if (m_effectList == nullptr)
+				return;
+
+			/* エフェクトを再生する座標を設定。*/
+			m_effectPosition = position;
+			m_effectPosition.y += 10.0f;
+
+			/* エフェクトを設定。*/
+			m_effectList->PlayEffect(nsEffect::Hit,
+				m_effectPosition,
+				Quaternion::Identity,
+				Vector3::One * 8.0f);
 		}
 	}
 }

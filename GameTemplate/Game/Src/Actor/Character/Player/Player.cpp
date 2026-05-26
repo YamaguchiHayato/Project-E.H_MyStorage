@@ -25,6 +25,8 @@
 #include "Src/Actor/Character/Common/WeaponHitDetection.h"
 #include "Src/Sound/SoundLister.h"
 #include "Src/Actor/Character/NPC/NPCBrain.h"
+#include "Src/Actor/Character/NPC/State/BasicState/NPCHelpState.h"
+#include "ResourceUtility.h"
 
 namespace
 {
@@ -36,6 +38,29 @@ namespace
 
 	const Vector3 POS = Vector3(0.0f,100.0f, 0.0f);     //! プレイヤーの初期座標。
 
+	/* カメラクランプ。*/
+	constexpr float BATTLE_MIN_X = -300.0f;
+	constexpr float BATTLE_MAX_X = 260.0f;
+	constexpr float BATTLE_MIN_Z = -100.0f;
+	constexpr float BATTLE_MAX_Z = 100.0f;;
+
+	/**
+	 * @brief 値を最小値と最大値の範囲内にクランプする関数。
+	 * @param value クランプする値。
+	 * @param minValue 最小値。
+	 * @param maxValue 最大値。
+	 * @return クランプされた値。
+	 */
+	auto ClampValue(float value, float minValue, float maxValue)
+	{
+		if (value < minValue)
+			return minValue;
+
+		if (value > maxValue)
+			return maxValue;
+
+		return value;
+	}
 }
 
 namespace nsApp
@@ -107,9 +132,7 @@ namespace nsApp
 
 			/* すり抜け判定。*/
 			if (!m_isIgnorePlayerSet)
-			{
 				ComputeSlipThrough();
-			}
 
 			/* ヒットストップ状態なら*/
 			if (IsHitStop())
@@ -130,6 +153,9 @@ namespace nsApp
 
 			/* モデルの更新より先に入力判定を更新する。*/
 			m_playerInput.Update();
+
+			/* 死亡判定を検出する。 */
+			CheckDeth();
 
 			/* リクエストを受け取って必要なステートをコール。*/
 			if (m_stateMachine->GetCurrentState()->RequestID(m_currentStateID))
@@ -230,6 +256,76 @@ namespace nsApp
 		}
 
 
+		Vector3 Player::ClampBattleAreaMoveVector(const Vector3& moveVector, float frameTime) const
+		{
+			Vector3 currentPos = m_currentPosition;
+
+			// moveVector は速度なので、frameTime を掛けて「今回の移動量」に変換する。
+			Vector3 moveDelta = moveVector * frameTime;
+			Vector3 nextPos = currentPos + moveDelta;
+
+			Vector3 fixedMoveDelta = moveDelta;
+
+			if (nextPos.x < BATTLE_MIN_X)
+			{
+				fixedMoveDelta.x = BATTLE_MIN_X - currentPos.x;
+			}
+			else if (nextPos.x > BATTLE_MAX_X)
+			{
+				fixedMoveDelta.x = BATTLE_MAX_X - currentPos.x;
+			}
+
+			if (nextPos.z < BATTLE_MIN_Z)
+			{
+				fixedMoveDelta.z = BATTLE_MIN_Z - currentPos.z;
+			}
+			else if (nextPos.z > BATTLE_MAX_Z)
+			{
+				fixedMoveDelta.z = BATTLE_MAX_Z - currentPos.z;
+			}
+
+			// CharacterController::Execute は速度ベクトルを受け取っているため、
+			// 補正後の移動量を速度に戻す。
+			if (frameTime > 0.0f)
+			{
+				return fixedMoveDelta / frameTime;
+			}
+
+			return Vector3::Zero;
+		}
+
+
+		void Player::MoveWithBattleClamp(const Vector3& moveVector, float frameTime)
+		{
+			Vector3 fixedMoveVector = ClampBattleAreaMoveVector(moveVector, frameTime);
+
+			m_characterController.Execute(fixedMoveVector, frameTime);
+
+			// キャラコンの結果をPlayer本体の座標へ反映する。
+			SetPosition(m_characterController.GetPosition());
+		}
+
+
+		void Player::CheckDeth()
+		{
+			/* 早期リターン。*/
+			if (m_isDead || m_characterStatus.hp.currentHP > 0)
+				return;
+
+			/* HPを0にする。*/
+			m_characterStatus.hp.currentHP = 0;
+
+			/* ダウンカウントを加算する。*/
+			m_rescueStatusManager.AddDownCount();
+
+			/* フラグをセット。*/
+			m_isDead = true;
+
+			/* Dethステートに遷移。*/
+			m_stateMachine->ChangeState(m_stateFactory[PlayerStateID::enDeath]());
+		}
+
+
 		void Player::PlayBasicAnimation(CharacterBasicAnimationList state)
 		{
 			int animIndex = m_playerAnimation.GetBasicAnimationIndex(state);
@@ -254,7 +350,14 @@ namespace nsApp
 
 		void Player::ReceiveHelp()
 		{
-			m_characterStatus.hp.currentHP = 1000;
+			/* 死亡フラグを解除する。*/
+			m_isDead = false;
+
+			/* ダウンカウントをリセットする。*/
+			m_rescueStatusManager.ResetRescueStatus();
+
+			/* 最大HPを参照する。*/
+			m_characterStatus.hp.currentHP = m_characterStatus.hp.maxHP;
 
 			/* 自分のHPを回復させる。*/
 			/* 起き上がりステート（PlayerGetUpState）へ強制移行。*/
@@ -264,17 +367,7 @@ namespace nsApp
 
 		nsActor::Player* Player::SearchCharacter()
 		{
-			auto target = FindGO<nsActor::Player>("player2");
-			if (target != nullptr && reinterpret_cast<uintptr_t>(target) != 0xFFFFFFFFFFFFFFFF)
-			{
-				if (target->GetCharacterStatus().hp.currentHP <= 0)
-				{
-					Vector3 diff = GetPosition() - target->GetPosition();
-					if(diff.Length() < 150.0f)
-						return target;
-				}
-			}
-			return nullptr;
+			return ResourceUtility::SearchNearestDownCharacter(this, 150.0f);
 		}
 
 

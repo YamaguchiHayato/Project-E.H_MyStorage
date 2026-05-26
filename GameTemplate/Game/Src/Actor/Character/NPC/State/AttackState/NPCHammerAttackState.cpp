@@ -51,11 +51,18 @@ namespace nsApp
 
 		void NPCHammerAttackState::Update()
 		{
-			auto target = m_npcBrain->SearchTarget();
+			if (CheckHelpTransition())
+				return;
+
+			nsActor::ICharacter* target = m_npcBrain->SearchTarget();
+
 
 			/* 早期リターン */
-			if (!target || !m_getBody)
+			if (target == nullptr || m_getBody == nullptr)
+			{
+				m_stateMachine->ChangeState(new NPCChaseState());
 				return;
+			}
 
 			/* 距離を計算 */
 			ComputeDistance(target);

@@ -10,6 +10,9 @@ namespace nsApp
 		{
 			m_player = static_cast<nsActor::Player*>(m_owner);
 
+			if (m_player == nullptr)
+				return;
+
 			/* •‚¯‚é‘ÎÛ‚ÌPlayer/NPC‚ð’Tõ‚·‚éB*/
 			m_targetPlayer = m_player->SearchCharacter();
 

@@ -40,12 +40,20 @@ namespace nsApp
 				NPCTwinGunPattern::enAir;
 		}
 
+
 		void NPCTwinGunAttackState::Update()
 		{
-			auto target = m_npcBrain->SearchTarget();
-
-			if (!target || !m_getBody)
+			if (CheckHelpTransition())
 				return;
+
+			nsActor::ICharacter* target = m_npcBrain->SearchTarget();
+
+			if (target == nullptr || m_getBody == nullptr)
+			{
+				m_stateMachine->ChangeState(new NPCChaseState());
+				return;
+			}
+				
 
 			ComputeDistance(target);
 

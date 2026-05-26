@@ -232,6 +232,12 @@
     <ClCompile Include="BossRoarState.cpp" />
     <ClCompile Include="Src\Actor\Character\Common\Damage\DamageProcessor.cpp" />
     <ClCompile Include="Src\Actor\Character\Common\Damage\DamageIndicatorPool.cpp" />
+    <ClCompile Include="Src\Actor\Heel\HeelArea.cpp" />
+    <ClCompile Include="Src\Actor\Character\NPC\State\BasicState\NPCHelpState.cpp" />
+    <ClCompile Include="ResourceUtility.cpp" />
+    <ClCompile Include="Src\Actor\Character\Player\Component\RescueStatusManager.cpp" />
+    <ClCompile Include="Src\Actor\Character\NPC\Component\NPCCombatHelper.cpp" />
+    <ClCompile Include="Src\Actor\Character\NPC\Component\RescueStatusManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
@@ -430,6 +436,12 @@
     <ClInclude Include="Src\Actor\Character\Common\Pool\IPoolable.h" />
     <ClInclude Include="Src\Actor\Character\Common\Pool\GameObjectPool.h" />
     <ClInclude Include="Src\Actor\Character\Common\Damage\DamageIndicatorPool.h" />
+    <ClInclude Include="Src\Actor\Heel\HeelArea.h" />
+    <ClInclude Include="Src\Actor\Character\NPC\State\BasicState\NPCHelpState.h" />
+    <ClInclude Include="ResourceUtility.h" />
+    <ClInclude Include="Src\Actor\Character\Player\Component\RescueStatusManager.h" />
+    <ClInclude Include="Src\Actor\Character\NPC\Component\NPCCombatHelper.h" />
+    <ClInclude Include="Src\Actor\Character\NPC\Component\RescueStatusManager.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Src\Actor\Character\Common\Pool\GameObjectPool.inl" />

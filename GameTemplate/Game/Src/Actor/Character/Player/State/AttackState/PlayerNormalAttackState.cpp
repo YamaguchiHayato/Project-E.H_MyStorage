@@ -62,9 +62,17 @@ namespace nsApp
 
 		void PlayerNormalAttackState::SummonMissile()
 		{
+			if (m_player->GetCurrentWeapon() != WeaponType::Wand)
+				return;
+
+			/* 座標を取得。*/
+			m_spawnPosition = m_player->GetWeaponHitDetection().GetPosition();
+
+			/* 前方向のベクトルを取得する。*/
+			m_forwardDirection = m_player->GetForwardVector();
+
 			/* 魔法の生成。*/
-			if (m_player->GetCurrentWeapon() == WeaponType::Wand)
-				ConstructAndTransmitMagicRequest(nsActor::MagicType::enNormalMagic);
+			ConstructAndTransmitMagicRequest(nsActor::MagicType::enNormalMagic);
 		}
 
 
