@@ -46,17 +46,19 @@ namespace nsApp
 		CLASS_T
 	    void StateMachine<T_NAME>::ChangeState(IState<T_NAME>* newState)
 		{
-			/* 現在のステートを終了する。*/
-			m_currentState->Exit();
-			/* 現在のステートを削除する。*/
-			delete m_currentState;
+			if (m_currentState != nullptr)
+			{
+				/* 現在のステートを終了する。*/ 
+				m_currentState->Exit();
+				/* ステートを開放する。*/
+				delete m_currentState;
+			}
 
-			/* nullが渡されているならNullStateで保護する。*/
-			m_currentState = (newState == nullptr) ? new NullState<T_NAME>() : newState;
-
-			/* ステートの登録。*/
+			/* 新しいステートをセットする。*/
+			m_currentState = newState;
+			/* ステートを登録する。*/
 			m_currentState->Register(m_owner, this);
-			/* ステートの初期化処理を予備だす。*/
+			/* 新しいステートを開始する。*/
 			m_currentState->Enter();
 		}
 

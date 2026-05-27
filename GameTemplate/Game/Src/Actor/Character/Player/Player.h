@@ -369,7 +369,7 @@ namespace nsApp
 			 */
 			inline bool IsDeath() const
 			{
-				return m_isDead || m_characterStatus.hp.currentHP <= 0;
+				return m_isDead;
 			}
 
 			/**

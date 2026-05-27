@@ -216,6 +216,7 @@ namespace nsApp
 			m_damageIndicatorPool = NewGO<DamageIndicatorPool>(0, "damagePool");
 			DamageProcessor::SetDamageIndicatorPool(m_damageIndicatorPool);
 
+
 			/* プレイアブルキャラを生成する。*/
 			SpawnPlayCharacter();
 

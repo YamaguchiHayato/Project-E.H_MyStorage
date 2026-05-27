@@ -36,8 +36,6 @@ namespace nsApp
 				/* 状態遷移図。*/
 				Transition transitionDiagram[] =
 				{
-					/* 死亡状態。*/
-					{ inputClass.IsDeath(), nsActor::PlayerStateID::enDeath },
 					/* ダメージ状態。*/
 					{ inputClass.IsDamage(), nsActor::PlayerStateID::enHit },
 					/* 走り状態。*/
