@@ -18,6 +18,15 @@ namespace nsApp
 			if (m_player == nullptr)
 				return;
 
+			m_dethPosition = m_player->GetPosition();
+
+			m_player->SetPostureOffset(Quaternion::Identity);
+			m_player->SetWeaponRotationByQuaternion(Quaternion::Identity);
+			m_player->SetFallVelocity(0.0f);
+			m_player->SetInputEnable(false);
+
+			m_player->SetPosition(m_dethPosition);
+
 			/* アニメーションを再生。*/
 			m_player->PlayBasicAnimation(CharacterBasicAnimationList::Death);
 		}
@@ -28,6 +37,9 @@ namespace nsApp
 			/* 早期リターン。*/
 			if (m_player == nullptr)
 				return;
+
+			m_player->SetPosition(m_dethPosition);
+			m_player->GetCharacterController().SetPosition(m_dethPosition);
 		}
 
 

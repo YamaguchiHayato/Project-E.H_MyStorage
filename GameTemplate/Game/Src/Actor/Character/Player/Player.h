@@ -141,7 +141,7 @@ namespace nsApp
 					m_currentWeaponSE->Stop();
 
 					/* 破棄。*/
-					DeleteGO(m_currentWeaponSE);
+//					DeleteGO(m_currentWeaponSE);
 
 					/* リモコンを破棄する。*/ 
 					m_currentWeaponSE = nullptr;
@@ -438,7 +438,7 @@ namespace nsApp
 
 
 			int animIndex = 0;
-			int m_inputWaitTimer;
+			int m_inputWaitTimer = 0;
 			int m_chargeLevel = 1;                                                                                 //! チャージレベル。
 
 			float m_fallVelocity = 0.0f;                                                                           //! 落下速度。

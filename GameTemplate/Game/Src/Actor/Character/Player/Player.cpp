@@ -128,17 +128,33 @@ namespace nsApp
 		void Player::Update()
 		{
 			/* ICharacterクラスの更新処理をコール。*/
-			ICharacter::Update();
+	 		ICharacter::Update();
+
+			/* ヒットストップタイマーを更新する*/
+			ICharacter::UpdateHitStioTImer();
 
 			/* すり抜け判定。*/
 			if (!m_isIgnorePlayerSet)
 				ComputeSlipThrough();
 
-			/* ヒットストップ状態なら*/
+			/* 先に死亡判定を行う。*/
+			CheckDeth();
+
+			/* 死亡中はNPC思考・入力・通常ステート遷移・武器判定を止める。*/
+			if (IsDeath())
+			{
+				m_model.SettRotation(m_angle * m_postureOffset);
+				m_model.SetPosition(m_currentPosition);
+				m_model.Update();
+
+				return;
+			}
+
+			/* ヒットストップ状態なら。*/
 			if (IsHitStop())
 				return;
 
-			/* ゲーム開始直後数フレームは入力を受け付けない*/
+			/* ゲーム開始直後数フレームは入力を受け付けない。*/
 			if (m_inputWaitTimer > 0)
 			{
 				m_inputWaitTimer--;
@@ -147,39 +163,30 @@ namespace nsApp
 			else
 				m_playerInput.SetInputEnable(true);
 
-			/* NPCの場合、仮想のコントローラーによる判定を行う。*/
+			/* NPCの場合、死亡していない時だけ思考を更新する。*/
 			if (m_brain != nullptr)
 				m_brain->Update();
 
-			/* モデルの更新より先に入力判定を更新する。*/
+			/* 入力更新。*/
 			m_playerInput.Update();
-
-			/* 死亡判定を検出する。 */
-			CheckDeth();
 
 			/* リクエストを受け取って必要なステートをコール。*/
 			if (m_stateMachine->GetCurrentState()->RequestID(m_currentStateID))
 			{
-				/* ステートの種類をキャストする。*/
 				m_playerStateID = static_cast<PlayerStateID>(m_currentStateID);
 
-				/* 登録されているステートならChangeStateに情報を渡す。*/
 				if (m_stateFactory.count(m_playerStateID) > 0)
 					m_stateMachine->ChangeState(m_stateFactory[m_playerStateID]());
 			}
 
 			/* ステートマシーンを更新する。*/
-			m_stateMachine->Update();
+			Actor::Update();
 
 			m_model.SettRotation(m_angle * m_postureOffset);
-
-			/* モデルの座標を更新する。*/
 			m_model.SetPosition(m_currentPosition);
-
-			/* モデルを更新する。*/
 			m_model.Update();
 
-			/* モデルの更新が終わった後に剣の当たり判定をテーブルに渡す。*/
+			/* 生存中だけ武器判定を更新する。*/
 			m_weaponHitDetection.Update(m_model.GetWeaponPosition());
 		}
 
@@ -315,6 +322,22 @@ namespace nsApp
 			/* HPを0にする。*/
 			m_characterStatus.hp.currentHP = 0;
 
+			/* 死亡時の処理。*/
+			/* 当たり判定をオフ。*/
+			m_weaponHitDetection.Disable();
+
+			/* 武器SEを止める。*/ 
+			StopWeaponSE();
+
+			/* サブ武器の描画をオフにする。*/
+			ResetSubWeapon();
+
+			Vector3 dethPosition = m_currentPosition;
+			SetPosition(dethPosition);
+
+			/* */
+			m_postureOffset = Quaternion::Identity;
+
 			/* ダウンカウントを加算する。*/
 			m_rescueStatusManager.AddDownCount();
 
@@ -322,7 +345,7 @@ namespace nsApp
 			m_isDead = true;
 
 			/* Dethステートに遷移。*/
-			m_stateMachine->ChangeState(m_stateFactory[PlayerStateID::enDeath]());
+			m_stateMachine->ChangeState(new nsState::PlayerDethState(dethPosition));
 		}
 
 
@@ -389,7 +412,7 @@ namespace nsApp
 			m_stateFactory[PlayerStateID::enHit] = []() { return new nsState::PlayerHitState(); };
 
 			/* 死亡状態。*/
-			m_stateFactory[PlayerStateID::enDeath] = []() { return new nsState::PlayerDethState(); };
+			m_stateFactory[PlayerStateID::enDeath] = [this]() { return new nsState::PlayerDethState(); };
 
 			/* ガード状態。*/
 			m_stateFactory[PlayerStateID::enGuard] = []() { return new nsState::PlayerGuardState(); };

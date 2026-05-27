@@ -18,6 +18,7 @@ namespace nsApp
 		public:
 			/* コンストラクタとデストラクタ。*/
 			PlayerDethState() = default;
+			explicit PlayerDethState(const Vector3& desathPos) : m_dethPosition(desathPos) {};
 			virtual ~PlayerDethState() = default;
 
 
@@ -26,17 +27,16 @@ namespace nsApp
 			void Enter() override;
 			void Update() override;
 			void Exit() override {};
-			/* ステートを遷移させる。*/
 			bool RequestID(uint8_t& id) override;
 
 
 		private:
-			nsActor::Player* m_player; /* プレイヤーの実態へのポインタ。*/
+			nsActor::Player* m_player = nullptr; /* プレイヤーの実態へのポインタ。*/
 
 
 		private:
-			Vector3 m_fallSpeed;       /* 落下速度。*/
-			
+			Vector3 m_fallSpeed;					   //! 落下速度。
+			Vector3 m_dethPosition = Vector3::Zero;    //! 死亡した位置。
 		};
 	}
 }

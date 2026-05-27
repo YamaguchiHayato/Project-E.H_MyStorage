@@ -90,7 +90,7 @@ namespace nsApp
 			m_stateFactory[PlayerStateID::enHit] = []() { return new nsState::PlayerHitState(); };
 
 			/* €–Só‘ÔB*/
-			m_stateFactory[PlayerStateID::enDeath] = []() { return new nsState::PlayerDethState(); };
+			m_stateFactory[PlayerStateID::enDeath] = [this]() { return new nsState::PlayerDethState(); };
 
 			/* •‚¯‚éó‘ÔB*/
 			m_stateFactory[PlayerStateID::enHelp] = []() { return new nsState::PlayerReBoneState(); };
